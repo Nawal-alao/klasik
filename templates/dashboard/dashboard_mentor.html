@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block titre %}Mon tableau de bord — Évoly{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <p class="eyebrow">Tableau de bord mentor</p>
+    <h1>Salut {{ mentor.prenom }} 👋</h1>
+    <p class="texte-doux">
+        {% for matiere in mentor.matieres.all %}{{ matiere.nom }}{% if not forloop.last %} · {% endif %}{% endfor %}
+    </p>
+</div>
+
+<div class="grille-stats">
+    <div class="stat-carte">
+        <div class="valeur">{{ eleves|length }}</div>
+        <div class="label">Élève{{ eleves|length|pluralize }} suivi{{ eleves|length|pluralize }}</div>
+    </div>
+    <div class="stat-carte">
+        <div class="valeur">{{ suivis_actifs|length }}</div>
+        <div class="label">Suivi{{ suivis_actifs|length|pluralize }} actif{{ suivis_actifs|length|pluralize }}</div>
+    </div>
+    <div class="stat-carte">
+        <div class="valeur">
+            {% if note_moyenne %}{{ note_moyenne|floatformat:1 }}/5{% else %}—{% endif %}
+        </div>
+        <div class="label">Note moyenne</div>
+    </div>
+</div>
+
+<div class="section-titre">
+    <h2>Mes élèves</h2>
+</div>
+
+<div class="carte">
+    {% if suivis %}
+        <ul class="liste-simple">
+            {% for suivi in suivis %}
+                <li>
+                    <div>
+                        <strong>{{ suivi.eleve.prenom }} {{ suivi.eleve.nom }}</strong>
+                        <span class="texte-doux"> — {{ suivi.matiere.nom }}</span>
+                    </div>
+                    <span class="badge {% if suivi.actif %}badge-actif{% else %}badge-inactif{% endif %}">
+                        {% if suivi.actif %}Actif{% else %}Terminé{% endif %}
+                    </span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="etat-vide">
+            <p>Aucun élève ne te suit encore. Ton profil deviendra visible une fois les élèves inscrits sur la plateforme.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

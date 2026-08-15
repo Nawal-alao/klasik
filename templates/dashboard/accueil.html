@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block titre %}Évoly — Apprends à ton rythme, avec les bons repères{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <p class="eyebrow">Système éducatif béninois</p>
+    <h1>Des cours pensés pour ta classe, ta série, et toi.</h1>
+    <p class="sous-titre">
+        Évoly personnalise chaque cours selon ton niveau, te connecte à de vrais mentors,
+        et suit ta progression matière par matière.
+    </p>
+    <div class="hero-actions">
+        {% if not user.is_authenticated %}
+            <a href="{% url 'comptes:inscription_eleve' %}" class="btn btn-primaire">Je suis élève</a>
+            <a href="{% url 'comptes:inscription_mentor' %}" class="btn btn-secondaire">Je suis mentor</a>
+        {% else %}
+            {% if user.profil_eleve %}
+                <a href="{% url 'dashboard:dashboard_eleve' %}" class="btn btn-primaire">Aller à mon tableau de bord</a>
+            {% elif user.profil_mentor %}
+                <a href="{% url 'dashboard:dashboard_mentor' %}" class="btn btn-primaire">Aller à mon tableau de bord</a>
+            {% endif %}
+        {% endif %}
+    </div>
+</section>
+
+<section class="section-fonctionnalites">
+    <p class="section-eyebrow">Comment ça marche</p>
+    <h2>Une plateforme construite autour de ton parcours scolaire</h2>
+
+    <div class="grille-cartes">
+        <div class="carte-fonctionnalite">
+            <div class="numero">01</div>
+            <h3>Cours personnalisés</h3>
+            <p>Chaque cours est filtré selon ta classe et ta série, tirés directement des manuels officiels et validés par de vrais professeurs.</p>
+        </div>
+        <div class="carte-fonctionnalite">
+            <div class="numero">02</div>
+            <h3>Mentors humains</h3>
+            <p>Suis plusieurs mentors selon les matières, et évalue-les pour aider les autres élèves à trouver le bon accompagnement.</p>
+        </div>
+        <div class="carte-fonctionnalite">
+            <div class="numero">03</div>
+            <h3>Progression suivie</h3>
+            <p>Chaque examen affine ton profil, matière par matière, notion par notion, pour cibler exactement ce qu'il te reste à travailler.</p>
+        </div>
+        <div class="carte-fonctionnalite">
+            <div class="numero">04</div>
+            <h3>Communauté par série</h3>
+            <p>Rejoins des groupes d'étude avec des élèves de ta classe et ta série, pour apprendre ensemble, pas tout seul.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

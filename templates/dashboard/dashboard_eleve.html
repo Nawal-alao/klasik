@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block titre %}Mon tableau de bord — Évoly{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <p class="eyebrow">Tableau de bord</p>
+    <h1>Salut {{ eleve.prenom }} 👋</h1>
+    <p class="texte-doux">{{ eleve.get_classe_scolaire_display }}{% if eleve.serie != "AUCUNE" %} · Série {{ eleve.serie }}{% endif %}</p>
+</div>
+
+<div class="grille-stats">
+    <div class="stat-carte">
+        <div class="valeur">{{ progressions|length }}</div>
+        <div class="label">Matière{{ progressions|length|pluralize }} suivie{{ progressions|length|pluralize }}</div>
+    </div>
+    <div class="stat-carte">
+        <div class="valeur">
+            {% if abonnement %}Actif{% else %}Inactif{% endif %}
+        </div>
+        <div class="label">Statut de l'abonnement</div>
+    </div>
+    <div class="stat-carte">
+        <div class="valeur">{{ eleve.date_inscription|date:"M Y" }}</div>
+        <div class="label">Membre depuis</div>
+    </div>
+</div>
+
+<div class="section-titre">
+    <h2>Ma progression</h2>
+    <a href="{% url 'pedagogie:liste_cours' %}">Voir tous les cours →</a>
+</div>
+
+<div class="carte" style="margin-bottom: 40px;">
+    {% if progressions %}
+        {% for progression in progressions %}
+            <div class="ligne-progression">
+                <div style="flex:1;">
+                    <div class="matiere-nom">{{ progression.matiere.nom }}</div>
+                    <div class="barre-progression-conteneur">
+                        <div class="barre-progression" style="width: {{ progression.niveau_maitrise }}%;"></div>
+                    </div>
+                </div>
+                <div class="pourcentage">{{ progression.niveau_maitrise|floatformat:0 }}%</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="etat-vide">
+            <p>Tu n'as pas encore de progression enregistrée. Passe ton premier examen pour commencer à suivre ton évolution.</p>
+            <a href="{% url 'evaluations:liste_examens' %}" class="btn btn-primaire">Voir les examens disponibles</a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="section-titre">
+    <h2>Mon abonnement</h2>
+</div>
+
+<div class="carte">
+    {% if abonnement %}
+        <p><span class="badge badge-actif">Actif</span></p>
+        <p class="texte-doux" style="margin-top:12px;">Formule {{ abonnement.get_formule_display }} — expire le {{ abonnement.date_fin|date:"d F Y" }}</p>
+        <a href="{% url 'abonnements:mon_abonnement' %}" class="btn btn-secondaire" style="margin-top:12px;">Gérer mon abonnement</a>
+    {% else %}
+        <div class="etat-vide">
+            <p>Tu n'as pas d'abonnement actif. Souscris pour débloquer les mentors et l'accès complet aux cours.</p>
+            <a href="{% url 'abonnements:souscrire' %}" class="btn btn-primaire">Souscrire maintenant</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

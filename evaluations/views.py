@@ -2,9 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import DetailView, View, ListView
-
-from pedagogie.models import Progression
-
+from .models import Progression
 from .models import Examen, Question, ReponseEleve, Resultat
 
 

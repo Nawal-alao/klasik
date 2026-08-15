@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block titre %}Communauté — Évoly{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <p class="eyebrow">Communauté</p>
+    <h1>Groupes d'étude</h1>
+    <p class="texte-doux">Échange avec des élèves de ta classe et ta série, matière par matière.</p>
+</div>
+
+{% if groupes %}
+    <div class="grille-cartes">
+        {% for groupe in groupes %}
+            <a href="{% url 'communaute:detail_groupe' groupe.pk %}" class="carte-groupe">
+                <span class="matiere-tag">{{ groupe.matiere.nom }}</span>
+                <h3>{{ groupe.nom }}</h3>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="carte">
+        <div class="etat-vide">
+            <p>Aucun groupe d'étude n'est encore disponible pour ta classe et ta série.</p>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block titre %}{{ examen.titre }} — Évoly{% endblock %}
+
+{% block content %}
+<p class="fil-ariane">
+    <a href="{% url 'evaluations:liste_examens' %}">Mes examens</a> / {{ examen.cours.matiere.nom }}
+</p>
+
+<div class="entete-page">
+    <p class="eyebrow">{{ examen.cours.matiere.nom }}</p>
+    <h1>{{ examen.titre }}</h1>
+    <p class="texte-doux">{{ questions|length }} question{{ questions|length|pluralize }} — réponds du mieux que tu peux, tu peux revenir en arrière avant de valider.</p>
+</div>
+
+<form method="post" action="{% url 'evaluations:passer_examen' examen.pk %}">
+    {% csrf_token %}
+
+    {% for question in questions %}
+        <div class="question-bloc">
+            <p class="numero-question">Question {{ forloop.counter }} / {{ questions|length }}</p>
+            <p class="enonce">{{ question.enonce }}</p>
+
+            {% if question.type_question == "QCM" %}
+                {% for choix in question.choix_reponses %}
+                    <div class="choix-reponse">
+                        <input type="radio"
+                               id="q{{ question.id }}-c{{ forloop.counter0 }}"
+                               name="reponse_{{ question.id }}"
+                               value="{{ choix }}"
+                               required>
+                        <label for="q{{ question.id }}-c{{ forloop.counter0 }}">{{ choix }}</label>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <input type="text" name="reponse_{{ question.id }}" placeholder="Ta réponse" required>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <div class="barre-actions-examen">
+        <button type="submit" class="btn btn-primaire">Valider mes réponses</button>
+    </div>
+</form>
+{% endblock %}

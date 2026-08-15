@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block titre %}Mon abonnement — Évoly{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <p class="eyebrow">Abonnement</p>
+    <h1>Mon abonnement</h1>
+</div>
+
+<div class="carte" style="margin-bottom:32px;">
+    {% if abonnement_actif %}
+        <p><span class="badge badge-actif">Actif</span></p>
+        <h3 style="margin-top:14px;">Formule {{ abonnement_actif.get_formule_display }}</h3>
+        <p class="texte-doux">
+            Débuté le {{ abonnement_actif.date_debut|date:"d F Y" }} —
+            expire le {{ abonnement_actif.date_fin|date:"d F Y" }}
+        </p>
+
+        <form method="post" action="{% url 'abonnements:annuler' %}" style="margin-top:20px;"
+              onsubmit="return confirm('Confirmer l\'annulation de ton abonnement ?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondaire">Annuler mon abonnement</button>
+        </form>
+    {% else %}
+        <div class="etat-vide">
+            <p>Tu n'as pas d'abonnement actif pour le moment. Souscris pour débloquer les mentors et l'accès complet aux cours.</p>
+            <a href="{% url 'abonnements:souscrire' %}" class="btn btn-primaire">Souscrire maintenant</a>
+        </div>
+    {% endif %}
+</div>
+
+{% if historique %}
+    <div class="section-titre">
+        <h2>Historique</h2>
+    </div>
+    <div class="carte">
+        <ul class="liste-simple">
+            {% for ancien in historique %}
+                <li>
+                    <div>
+                        <strong>Formule {{ ancien.get_formule_display }}</strong>
+                        <span class="texte-doux"> — du {{ ancien.date_debut|date:"d/m/Y" }} au {{ ancien.date_fin|date:"d/m/Y" }}</span>
+                    </div>
+                    <span class="badge badge-inactif">{{ ancien.get_statut_display }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+{% endblock %}

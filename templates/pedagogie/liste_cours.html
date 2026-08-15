@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block titre %}Mes cours — Évoly{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <p class="eyebrow">Pédagogie</p>
+    <h1>Tes cours</h1>
+    <p class="texte-doux">Filtrés automatiquement pour {{ request.user.profil_eleve.get_classe_scolaire_display }}{% if request.user.profil_eleve.serie != "AUCUNE" %}, série {{ request.user.profil_eleve.serie }}{% endif %}.</p>
+</div>
+
+{% if cours_liste %}
+    <div class="grille-cartes">
+        {% for cours in cours_liste %}
+            <a href="{% url 'pedagogie:detail_cours' cours.pk %}" class="carte-cours">
+                <span class="matiere-tag">{{ cours.matiere.nom }}</span>
+                <h3>{{ cours.titre }}</h3>
+                <p>{{ cours.description|truncatewords:20 }}</p>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="carte">
+        <div class="etat-vide">
+            <p>Aucun cours n'est encore disponible pour ta classe et ta série. Reviens bientôt !</p>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

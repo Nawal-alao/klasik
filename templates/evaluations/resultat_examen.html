@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block titre %}Résultat — {{ resultat.examen.titre }} — Évoly{% endblock %}
+
+{% block content %}
+<p class="fil-ariane">
+    <a href="{% url 'evaluations:liste_examens' %}">Mes examens</a> / {{ resultat.examen.titre }}
+</p>
+
+<div class="carte resultat-hero">
+    <p class="texte-doux">{{ resultat.examen.titre }}</p>
+    <div class="note-geante">{{ resultat.note|floatformat:1 }}<span class="note-sur"> / 20</span></div>
+    <p class="texte-doux" style="margin-top:12px;">Passé le {{ resultat.date_passage|date:"d F Y à H\hi" }}</p>
+</div>
+
+<div class="section-titre">
+    <h2>Détail de tes réponses</h2>
+</div>
+
+<div class="carte">
+    {% if reponses %}
+        {% for reponse in reponses %}
+            <div class="reponse-ligne">
+                <span class="puce {% if reponse.correct %}puce-correct{% else %}puce-incorrect{% endif %}">
+                    {% if reponse.correct %}✓{% else %}✕{% endif %}
+                </span>
+                <div>
+                    <p style="margin:0; font-weight:600;">{{ reponse.question.enonce }}</p>
+                    <p style="margin:4px 0 0;" class="texte-doux">Ta réponse : {{ reponse.reponse_donnee }}</p>
+                    {% if not reponse.correct %}
+                        <p style="margin:2px 0 0;" class="texte-doux">Bonne réponse : {{ reponse.question.bonne_reponse }}</p>
+                    {% endif %}
+                    <p class="notion-tag">{{ reponse.question.notion }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="texte-doux">Aucun détail disponible pour ce résultat.</p>
+    {% endif %}
+</div>
+
+<div style="margin-top:24px;">
+    <a href="{% url 'dashboard:dashboard_eleve' %}" class="btn btn-secondaire">Retour au tableau de bord</a>
+</div>
+{% endblock %}

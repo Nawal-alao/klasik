@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block titre %}Mes examens — Évoly{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <p class="eyebrow">Évaluation</p>
+    <h1>Tes examens</h1>
+    <p class="texte-doux">Un examen par cours, pour mesurer ta progression matière par matière.</p>
+</div>
+
+{% if examens_disponibles %}
+    {% for examen in examens_disponibles %}
+        <div class="carte-examen">
+            <div>
+                <span class="matiere-tag">{{ examen.cours.matiere.nom }}</span>
+                <h3>{{ examen.titre }}</h3>
+                <p class="date-examen">Publié le {{ examen.date_publication|date:"d F Y" }} · {{ examen.cours.titre }}</p>
+            </div>
+            <a href="{% url 'evaluations:passer_examen' examen.pk %}" class="btn btn-primaire">Commencer</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="carte">
+        <div class="etat-vide">
+            <p>Aucun examen disponible pour l'instant. Reviens à la fin du mois !</p>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

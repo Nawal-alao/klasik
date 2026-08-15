@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block titre %}Inscription élève — Évoly{% endblock %}
+
+{% block content %}
+<div class="conteneur-auth">
+    <p class="eyebrow">Rejoindre Évoly</p>
+    <h1>Créer mon compte élève</h1>
+    <p class="sous-titre">Quelques informations pour personnaliser tes cours dès le départ.</p>
+
+    <div class="carte-auth">
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<p class="texte-doux" style="margin-top:-14px; margin-bottom:16px; font-size:0.85rem;">{{ field.help_text }}</p>{% endif %}
+                {% if field.errors %}<p class="champ-erreur">{{ field.errors|striptags }}</p>{% endif %}
+            {% endfor %}
+
+            <div class="separateur-ou">Identifiants de connexion</div>
+
+            <label for="username">Nom d'utilisateur</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" required>
+
+            <button type="submit" class="btn btn-primaire">Créer mon compte</button>
+        </form>
+
+        <p class="lien-bas-de-carte">
+            Déjà inscrit ? <a href="{% url 'comptes:connexion' %}">Se connecter</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

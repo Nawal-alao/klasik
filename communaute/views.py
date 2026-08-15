@@ -23,17 +23,17 @@ class DetailGroupeView(LoginRequiredMixin, DetailView):
     model = GroupeEtude
     template_name = "communaute/detail_groupe.html"
     context_object_name = "groupe"
-
+ 
     def get_queryset(self):
         eleve = self.request.user.profil_eleve
         return GroupeEtude.objects.filter(
             classe_scolaire=eleve.classe_scolaire,
             serie=eleve.serie,
         )
-
+ 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["messages"] = self.object.messages.filter(
+        context["messages_groupe"] = self.object.messages.filter(
             statut=Message.Statut.VISIBLE,
         ).select_related("auteur").order_by("date_envoi")
         return context

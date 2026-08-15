@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block titre %}Souscrire — Évoly{% endblock %}
+
+{% block content %}
+<div class="conteneur-auth">
+    <p class="eyebrow">Abonnement</p>
+    <h1>Souscrire à Évoly</h1>
+    <p class="sous-titre">Débloque l'accès aux mentors et à l'ensemble des cours de ta classe.</p>
+
+    <div class="carte-auth">
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<p class="texte-doux" style="margin-top:-14px; margin-bottom:16px; font-size:0.85rem;">{{ field.help_text }}</p>{% endif %}
+                {% if field.errors %}<p class="champ-erreur">{{ field.errors|striptags }}</p>{% endif %}
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primaire">Confirmer la souscription</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

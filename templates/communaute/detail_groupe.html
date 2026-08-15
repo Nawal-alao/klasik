@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block titre %}{{ groupe.nom }} — Évoly{% endblock %}
+
+{% block content %}
+<p class="fil-ariane">
+    <a href="{% url 'communaute:liste_groupes' %}">Communauté</a> / {{ groupe.matiere.nom }}
+</p>
+
+<div class="entete-page">
+    <p class="eyebrow">{{ groupe.matiere.nom }} · {{ groupe.get_classe_scolaire_display }}</p>
+    <h1>{{ groupe.nom }}</h1>
+</div>
+
+<div class="fil-messages">
+    {% if messages_groupe %}
+        {% for message in messages_groupe %}
+            <div class="message-bulle">
+                <div class="message-entete">
+                    <span class="message-auteur">{{ message.auteur.first_name|default:message.auteur.username }}</span>
+                    <span class="message-date">{{ message.date_envoi|date:"d M à H:i" }}</span>
+                </div>
+                <p class="message-contenu">{{ message.contenu }}</p>
+                <div class="message-actions">
+                    <button type="button" class="lien-signaler"
+                            onclick="document.getElementById('dialogue-{{ message.id }}').showModal()">
+                        Signaler
+                    </button>
+                </div>
+            </div>
+
+            <dialog class="dialogue-signalement" id="dialogue-{{ message.id }}">
+                <h3>Signaler ce message</h3>
+                <p class="texte-doux" style="margin-bottom:16px; font-size:0.88rem;">Explique brièvement le problème, un mentor va l'examiner.</p>
+                <form method="post" action="{% url 'communaute:signaler_message' message.id %}">
+                    {% csrf_token %}
+                    <textarea name="motif" rows="3" placeholder="Motif du signalement" required></textarea>
+                    <div style="display:flex; gap:10px;">
+                        <button type="button" class="btn btn-secondaire" style="flex:1;"
+                                onclick="document.getElementById('dialogue-{{ message.id }}').close()">Annuler</button>
+                        <button type="submit" class="btn btn-primaire" style="flex:1;">Envoyer</button>
+                    </div>
+                </form>
+            </dialog>
+        {% endfor %}
+    {% else %}
+        <div class="carte">
+            <div class="etat-vide">
+                <p>Aucun message pour le moment. Sois le premier à lancer la discussion !</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<div class="formulaire-message">
+    <form method="post" action="{% url 'communaute:envoyer_message' groupe.pk %}">
+        {% csrf_token %}
+        <textarea name="contenu" rows="1" placeholder="Écris un message au groupe…" required></textarea>
+        <button type="submit" class="btn btn-primaire">Envoyer</button>
+    </form>
+</div>
+{% endblock %}

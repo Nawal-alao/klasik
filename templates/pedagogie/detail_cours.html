@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block titre %}{{ cours.titre }} — Évoly{% endblock %}
+
+{% block content %}
+<p class="fil-ariane">
+    <a href="{% url 'pedagogie:liste_cours' %}">Mes cours</a> / {{ cours.matiere.nom }}
+</p>
+
+<div class="entete-page">
+    <p class="eyebrow">{{ cours.matiere.nom }} · {{ cours.get_classe_scolaire_display }}</p>
+    <h1>{{ cours.titre }}</h1>
+    {% if cours.description %}<p class="texte-doux">{{ cours.description }}</p>{% endif %}
+</div>
+
+{% if sequences %}
+    <div class="mise-en-page-cours">
+        <nav class="sommaire-sequences">
+            {% for sequence in sequences %}
+                <a href="#sequence-{{ sequence.id }}">{{ sequence.ordre }}. {{ sequence.titre }}</a>
+            {% endfor %}
+        </nav>
+
+        <div>
+            {% for sequence in sequences %}
+                <article class="sequence" id="sequence-{{ sequence.id }}">
+                    <h3>Séquence {{ sequence.ordre }}</h3>
+                    <h2>{{ sequence.titre }}</h2>
+                    <div class="contenu-sequence">
+                        {{ sequence.contenu|safe }}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+{% else %}
+    <div class="carte">
+        <div class="etat-vide">
+            <p>Le contenu de ce cours arrive bientôt.</p>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
