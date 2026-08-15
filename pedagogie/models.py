@@ -82,5 +82,32 @@ class Progression(models.Model):
 	class Meta:
 		unique_together = ("eleve", "matiere")
 
+	def recalculer(self):
+		from evaluations.models import ReponseEleve
+
+		reponses = ReponseEleve.objects.filter(
+			eleve=self.eleve,
+			question__examen__cours__matiere=self.matiere,
+		)
+		total = reponses.count()
+		if total == 0:
+			self.niveau_maitrise = 0
+			self.notions_faibles = []
+		else:
+			correctes = reponses.filter(correct=True).count()
+			self.niveau_maitrise = (correctes / total) * 100
+
+			notions = reponses.values("question__notion").distinct()
+			notions_faibles = []
+			for n in notions:
+				notion = n["question__notion"]
+				reponses_notion = reponses.filter(question__notion=notion)
+				taux_reussite = reponses_notion.filter(correct=True).count() / reponses_notion.count()
+				if taux_reussite < 0.5:
+					notions_faibles.append(notion)
+			self.notions_faibles = notions_faibles
+
+		self.save()
+
 	def __str__(self):
 		return f"Progression {self.eleve} - {self.matiere} ({self.niveau_maitrise}%)"
