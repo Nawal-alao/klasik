@@ -12,6 +12,10 @@
         <form method="post" novalidate>
             {% csrf_token %}
 
+            {% if form.non_field_errors %}
+                <p class="champ-erreur">{{ form.non_field_errors|striptags }}</p>
+            {% endif %}
+
             {% for field in form %}
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {{ field }}

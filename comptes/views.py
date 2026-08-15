@@ -8,18 +8,20 @@ class InscriptionEleveView(CreateView):
     model = Eleve
     fields = ["prenom", "nom", "age", "classe_scolaire", "serie"]
     template_name = "comptes/inscription_eleve.html"
-    success_url = reverse_lazy("comptes:connexion")  # à adapter selon ton urls.py
+    success_url = reverse_lazy("comptes:connexion")
 
     def form_valid(self, form):
-        # Étape 1 : créer le User d'abord (Django gère le hachage du mot de passe)
+        username = self.request.POST.get("username")
+
+        if User.objects.filter(username=username).exists():
+            form.add_error(None, "Ce nom d'utilisateur est déjà pris. Choisis-en un autre.")
+            return self.form_invalid(form)
+
         user = User.objects.create_user(
-            username=self.request.POST.get("username"),
+            username=username,
             password=self.request.POST.get("password"),
         )
-        # Étape 2 : lier ce User à l'Eleve en cours de création, avant sauvegarde
         form.instance.utilisateur = user
-
-        # Étape 3 : laisser Django terminer (sauvegarde + redirection)
         return super().form_valid(form)
 
 

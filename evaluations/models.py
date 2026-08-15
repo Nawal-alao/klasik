@@ -2,17 +2,32 @@ from django.db import models
 
 
 class Examen(models.Model):
-	class TypeGeneration(models.TextChoices):
-		IA = "IA", "Généré par IA"
-		MANUEL = "MANUEL", "Créé par un mentor/professeur"
-
-	titre = models.CharField(max_length=200)
-	cours = models.ForeignKey('pedagogie.Cours', on_delete=models.CASCADE, related_name="examens")
-	type_generation = models.CharField(max_length=10, choices=TypeGeneration.choices)
-	date_publication = models.DateTimeField()
-
-	def __str__(self):
-		return self.titre
+    class TypeGeneration(models.TextChoices):
+        IA = "IA", "Généré par IA"
+        MANUEL = "MANUEL", "Créé par un mentor/professeur"
+ 
+    # NOUVEAU — même principe que Cours.StatutValidation
+    class StatutValidation(models.TextChoices):
+        EN_ATTENTE = "EN_ATTENTE", "En attente"
+        VALIDE = "VALIDE", "Validé"
+        REJETE = "REJETE", "Rejeté"
+ 
+    titre = models.CharField(max_length=200)
+    cours = models.ForeignKey("pedagogie.Cours", on_delete=models.CASCADE, related_name="examens")
+    type_generation = models.CharField(max_length=10, choices=TypeGeneration.choices)
+    date_publication = models.DateTimeField()
+ 
+    # NOUVEAUX CHAMPS — symétriques à Cours
+    statut_validation = models.CharField(
+        max_length=10, choices=StatutValidation.choices, default=StatutValidation.EN_ATTENTE
+    )
+    professeur_validateur = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="examens_valides"
+    )
+    date_validation = models.DateTimeField(null=True, blank=True)
+ 
+    def __str__(self):
+        return self.titre
 
 
 class Question(models.Model):

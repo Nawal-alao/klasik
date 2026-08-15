@@ -10,13 +10,14 @@ class ListeExamensDisponiblesView(LoginRequiredMixin, ListView):
     model = Examen
     template_name = "evaluations/liste_examens.html"
     context_object_name = "examens_disponibles"
-
+ 
     def get_queryset(self):
         eleve = self.request.user.profil_eleve
         return Examen.objects.filter(
             cours__classe_scolaire=eleve.classe_scolaire,
             cours__serie=eleve.serie,
             cours__statut_validation="VALIDE",
+            statut_validation="VALIDE",  # NOUVEAU : l'examen lui-même doit être validé
             date_publication__lt=timezone.now(),
         ).select_related("cours", "cours__matiere").order_by("-date_publication")
 
