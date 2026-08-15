@@ -48,5 +48,8 @@ class Signalement(models.Model):
 	motif = models.CharField(max_length=255)
 	date_signalement = models.DateTimeField(auto_now_add=True)
 
+	class Meta:
+		unique_together = ("message", "signale_par")
+
 	def __str__(self):
 		return f"Signalement sur {self.message} par {self.signale_par}"

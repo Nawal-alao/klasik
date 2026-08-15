@@ -1,4 +1,5 @@
 from django.db import models
+from ckeditor_uploader.fields import RichTextUploadingField
 
 
 # CHOIX PARTAGÉS (classe scolaire, série)
@@ -64,6 +65,22 @@ class Cours(models.Model):
 
 	def __str__(self):
 		return f"{self.titre} ({self.classe_scolaire}/{self.serie})"
+
+
+class Sequence(models.Model):
+    """
+    Une sous-partie d'un Cours. Contenu riche via CKEditor.
+    """
+    cours = models.ForeignKey(Cours, on_delete=models.CASCADE, related_name="sequences")
+    titre = models.CharField(max_length=200)
+    ordre = models.PositiveSmallIntegerField(help_text="Position de la séquence dans le cours (1, 2, 3...).")
+    contenu = RichTextUploadingField()
+
+    class Meta:
+        ordering = ["ordre"]
+
+    def __str__(self):
+        return f"{self.cours.titre} — Séquence {self.ordre}: {self.titre}"
 
 
 class Progression(models.Model):

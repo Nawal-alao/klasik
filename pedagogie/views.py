@@ -17,6 +17,12 @@ class ListeCoursView(LoginRequiredMixin, ListView):
         )
 
     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Fournit les séquences du cours (déjà triées via Meta.ordering)
+        context["sequences"] = self.object.sequences.all()
+        return context
+
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)  # récupère déjà cours_liste dedans
         context["prenom"] = self.request.user.profil_eleve.prenom
         return context
@@ -34,3 +40,8 @@ class DetailCoursView(LoginRequiredMixin, DetailView):
             serie=eleve.serie,
             statut_validation="VALIDE",
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["sequences"] = self.object.sequences.all()
+        return context

@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titre %}Évoly{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block css_supplementaire %}{% endblock %}
+</head>
+<body>
+
+    <header class="entete">
+        <div class="entete-conteneur">
+            <a href="{% url 'dashboard:accueil' %}" class="logo">Évoly<span>.</span></a>
+
+            <button class="bouton-menu-mobile" id="bouton-menu" aria-label="Ouvrir le menu" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+
+            <nav class="nav-liens" id="nav-liens">
+                {% if user.is_authenticated %}
+                    {% if user.profil_eleve %}
+                        <a href="{% url 'dashboard:dashboard_eleve' %}">Tableau de bord</a>
+                        <a href="{% url 'pedagogie:liste_cours' %}">Cours</a>
+                        <a href="{% url 'evaluations:liste_examens' %}">Examens</a>
+                        <a href="{% url 'communaute:liste_groupes' %}">Communauté</a>
+                        <a href="{% url 'abonnements:mon_abonnement' %}">Abonnement</a>
+                    {% elif user.profil_mentor %}
+                        <a href="{% url 'dashboard:dashboard_mentor' %}">Tableau de bord</a>
+                        <a href="{% url 'communaute:liste_groupes' %}">Communauté</a>
+                    {% endif %}
+
+                    <div class="nav-actions">
+                        <form action="{% url 'comptes:deconnexion' %}" method="post" style="margin:0;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondaire">Se déconnecter</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <a href="{% url 'comptes:inscription_eleve' %}">Je suis élève</a>
+                    <a href="{% url 'comptes:inscription_mentor' %}">Je suis mentor</a>
+
+                    <div class="nav-actions">
+                        <a href="{% url 'comptes:connexion' %}" class="btn btn-secondaire">Se connecter</a>
+                        <a href="{% url 'comptes:inscription_eleve' %}" class="btn btn-primaire">Commencer</a>
+                    </div>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="alerte alerte-{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; {% now "Y" %} Évoly — Plateforme éducative béninoise.</p>
+    </footer>
+
+    <script>
+        const boutonMenu = document.getElementById('bouton-menu');
+        const navLiens = document.getElementById('nav-liens');
+        boutonMenu.addEventListener('click', () => {
+            const ouvert = navLiens.classList.toggle('ouvert');
+            boutonMenu.setAttribute('aria-expanded', ouvert);
+        });
+    </script>
+
+    {% block js_supplementaire %}{% endblock %}
+</body>
+</html>
