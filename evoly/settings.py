@@ -10,7 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+# If python-dotenv is installed, load environment variables from a local
+# .env file so `os.environ` contains keys defined there. This is optional
+# and harmless when python-dotenv is not available.
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +30,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-s4$yz&&zl(bkn@7a-gwo762zr$-gpu8$wf=(!)b+&vkfejkrs#'
+# Read the secret key from environment variables. Support both
+# `DJANGO_SECRET_KEY` and `SECRET_KEY` names, and fall back to the
+# previous literal value if none is set (useful for local development).
+SECRET_KEY = (
+    os.environ.get('DJANGO_SECRET_KEY')
+    or os.environ.get('SECRET_KEY')
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -103,6 +119,8 @@ CKEDITOR_CONFIGS = {
     }
 }
 
+
+COHERE_API_KEY = os.environ.get("COHERE_API_KEY")
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration

@@ -53,3 +53,25 @@ class Signalement(models.Model):
 
 	def __str__(self):
 		return f"Signalement sur {self.message} par {self.signale_par}"
+ 
+ 
+class MessagePrive(models.Model):
+    class Statut(models.TextChoices):
+        VISIBLE = "VISIBLE", "Visible"
+        MASQUE = "MASQUE", "Masqué"
+        EN_ATTENTE = "EN_ATTENTE", "En attente de révision"
+ 
+    suivi = models.ForeignKey(
+        "comptes.SuiviMentor", on_delete=models.CASCADE, related_name="messages_prives"
+    )
+    auteur = models.ForeignKey(User, on_delete=models.CASCADE, related_name="messages_prives_envoyes")
+    contenu = models.TextField()
+    date_envoi = models.DateTimeField(auto_now_add=True)
+    statut = models.CharField(max_length=10, choices=Statut.choices, default=Statut.VISIBLE)
+ 
+    class Meta:
+        ordering = ["date_envoi"]
+ 
+    def __str__(self):
+        return f"{self.auteur} — {self.suivi} : {self.contenu[:40]}..."
+ 

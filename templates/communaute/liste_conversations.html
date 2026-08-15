@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block titre %}Mes conversations — Évoly{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <p class="eyebrow">Messagerie</p>
+    <h1>Mes conversations</h1>
+    <p class="texte-doux">Échanges privés avec tes mentors, matière par matière.</p>
+</div>
+
+{% if suivis %}
+    <div class="carte">
+        <ul class="liste-simple">
+            {% for suivi in suivis %}
+                <li>
+                    <a href="{% url 'communaute:detail_conversation' suivi.pk %}" style="flex:1; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            {% if request.user.profil_eleve %}
+                                <strong>{{ suivi.mentor.prenom }} {{ suivi.mentor.nom }}</strong>
+                            {% else %}
+                                <strong>{{ suivi.eleve.prenom }} {{ suivi.eleve.nom }}</strong>
+                            {% endif %}
+                            <span class="texte-doux"> — {{ suivi.matiere.nom }}</span>
+                        </div>
+                        <span class="badge {% if suivi.actif %}badge-actif{% else %}badge-inactif{% endif %}">
+                            {% if suivi.actif %}Actif{% else %}Terminé{% endif %}
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% else %}
+    <div class="carte">
+        <div class="etat-vide">
+            <p>Aucune conversation pour le moment.</p>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block titre %}Conversation — Évoly{% endblock %}
+
+{% block content %}
+<p class="fil-ariane">
+    <a href="{% url 'communaute:liste_conversations' %}">Mes conversations</a> / {{ suivi.matiere.nom }}
+</p>
+
+<div class="entete-page">
+    <p class="eyebrow">{{ suivi.matiere.nom }}</p>
+    <h1>
+        {% if request.user.profil_eleve %}
+            {{ suivi.mentor.prenom }} {{ suivi.mentor.nom }}
+        {% else %}
+            {{ suivi.eleve.prenom }} {{ suivi.eleve.nom }}
+        {% endif %}
+    </h1>
+</div>
+
+<div class="fil-messages">
+    {% if messages_prives %}
+        {% for message in messages_prives %}
+            <div class="message-bulle">
+                <div class="message-entete">
+                    <span class="message-auteur">{{ message.auteur.first_name|default:message.auteur.username }}</span>
+                    <span class="message-date">{{ message.date_envoi|date:"d M à H:i" }}</span>
+                </div>
+                <p class="message-contenu">{{ message.contenu }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="carte">
+            <div class="etat-vide">
+                <p>Aucun message pour le moment. Lance la conversation !</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<div class="formulaire-message">
+    <form method="post" action="{% url 'communaute:envoyer_message_prive' suivi.pk %}">
+        {% csrf_token %}
+        <textarea name="contenu" rows="1" placeholder="Écris ton message…" required></textarea>
+        <button type="submit" class="btn btn-primaire">Envoyer</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,7 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, ListView, View
 from django.shortcuts import get_object_or_404, redirect
-
+from django.contrib import messages as django_messages
+from comptes.models import SuiviMentor
+from .models import MessagePrive
+from .services import contient_mot_interdit
 from .models import GroupeEtude, Message, MotInterdit, Signalement
 import string
 
@@ -96,3 +99,80 @@ class SignalerMessageView(LoginRequiredMixin, View):
             messages.info(request, "Vous avez déjà signalé ce message.")
 
         return redirect("communaute:detail_groupe", pk=message.groupe.pk)
+
+ 
+ 
+def _suivis_de_lutilisateur(user):
+    """
+    Retourne le queryset des SuiviMentor concernant l'utilisateur connecté,
+    qu'il soit élève ou mentor. Centralise cette logique pour ne pas la
+    dupliquer dans chaque vue.
+    """
+    if hasattr(user, "profil_eleve"):
+        return SuiviMentor.objects.filter(eleve=user.profil_eleve)
+    elif hasattr(user, "profil_mentor"):
+        return SuiviMentor.objects.filter(mentor=user.profil_mentor)
+    return SuiviMentor.objects.none()
+ 
+ 
+class ListeConversationsView(LoginRequiredMixin, ListView):
+    model = SuiviMentor
+    template_name = "communaute/liste_conversations.html"
+    context_object_name = "suivis"
+ 
+    def get_queryset(self):
+        return _suivis_de_lutilisateur(self.request.user).select_related(
+            "eleve", "mentor", "matiere"
+        )
+ 
+ 
+class DetailConversationView(LoginRequiredMixin, DetailView):
+    model = SuiviMentor
+    template_name = "communaute/detail_conversation.html"
+    context_object_name = "suivi"
+ 
+    def get_queryset(self):
+        # Sécurité : seul un participant (élève ou mentor du suivi) peut
+        # accéder à cette conversation. Toute autre tentative reçoit un 404,
+        # exactement le même principe que ResultatExamenDetailView.
+        return _suivis_de_lutilisateur(self.request.user)
+ 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["messages_prives"] = self.object.messages_prives.filter(
+            statut=MessagePrive.Statut.VISIBLE
+        ).select_related("auteur")
+        return context
+ 
+ 
+class EnvoyerMessagePriveView(LoginRequiredMixin, View):
+ 
+    def post(self, request, *args, **kwargs):
+        # Même vérification de sécurité : on ne peut écrire que dans une
+        # conversation dont on est réellement participant.
+        suivi = get_object_or_404(_suivis_de_lutilisateur(request.user), pk=kwargs["pk"])
+ 
+        contenu = request.POST.get("contenu", "").strip()
+ 
+        if contenu:
+            statut = (
+                MessagePrive.Statut.EN_ATTENTE
+                if contient_mot_interdit(contenu)
+                else MessagePrive.Statut.VISIBLE
+            )
+ 
+            MessagePrive.objects.create(
+                suivi=suivi,
+                auteur=request.user,
+                contenu=contenu,
+                statut=statut,
+            )
+ 
+            if statut == MessagePrive.Statut.EN_ATTENTE:
+                django_messages.info(
+                    request,
+                    "Ton message contient des termes à vérifier, il sera visible après révision.",
+                )
+ 
+        return redirect("communaute:detail_conversation", pk=suivi.pk)
+ 
