@@ -19,7 +19,7 @@
     {% for question in questions %}
         <div class="question-bloc">
             <p class="numero-question">Question {{ forloop.counter }} / {{ questions|length }}</p>
-            <p class="enonce">{{ question.enonce }}</p>
+            <div class="enonce">{{ question.enonce|safe }}</div>
 
             {% if question.type_question == "QCM" %}
                 {% for choix in question.choix_reponses %}

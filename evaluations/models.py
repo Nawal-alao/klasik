@@ -1,4 +1,6 @@
 from django.db import models
+from ckeditor_uploader.fields import RichTextUploadingField
+
 
 
 class Examen(models.Model):
@@ -28,25 +30,25 @@ class Examen(models.Model):
  
     def __str__(self):
         return self.titre
-
-
+ 
+ 
 class Question(models.Model):
-	class Type(models.TextChoices):
-		CHOIX_MULTIPLE = "QCM", "Choix multiple"
-		REPONSE_LIBRE = "LIBRE", "Réponse libre"
-
-	examen = models.ForeignKey(Examen, on_delete=models.CASCADE, related_name="questions")
-	enonce = models.TextField()
-	type_question = models.CharField(max_length=10, choices=Type.choices, default=Type.CHOIX_MULTIPLE)
-	notion = models.CharField(
-		max_length=150,
-		help_text="Notion/thème précis (ex: 'Équations du second degré') pour le diagnostic fin."
-	)
-	choix_reponses = models.JSONField(null=True, blank=True, help_text="Liste des choix si QCM.")
-	bonne_reponse = models.CharField(max_length=500)
-
-	def __str__(self):
-		return f"{self.enonce[:50]}..."
+    class Type(models.TextChoices):
+        CHOIX_MULTIPLE = "QCM", "Choix multiple"
+        REPONSE_LIBRE = "LIBRE", "Réponse libre"
+ 
+    examen = models.ForeignKey(Examen, on_delete=models.CASCADE, related_name="questions")
+ 
+    # AVANT : enonce = models.TextField()
+    enonce = RichTextUploadingField()  # NOUVEAU — accepte images, schémas, mise en forme
+ 
+    type_question = models.CharField(max_length=10, choices=Type.choices, default=Type.CHOIX_MULTIPLE)
+    notion = models.CharField(max_length=150)
+    choix_reponses = models.JSONField(null=True, blank=True)
+    bonne_reponse = models.CharField(max_length=500)
+ 
+    def __str__(self):
+        return f"{self.enonce[:50]}..."
 
 
 class Resultat(models.Model):
