@@ -10,15 +10,21 @@
 </div>
 
 {% if examens_disponibles %}
-    {% for examen in examens_disponibles %}
-        <div class="carte-examen">
-            <div>
-                <span class="matiere-tag">{{ examen.cours.matiere.nom }}</span>
-                <h3>{{ examen.titre }}</h3>
-                <p class="date-examen">Publié le {{ examen.date_publication|date:"d F Y" }} · {{ examen.cours.titre }}</p>
-            </div>
-            <a href="{% url 'evaluations:passer_examen' examen.pk %}" class="btn btn-primaire">Commencer</a>
+    {% regroup examens_disponibles by niveau_difficulte as examens_par_niveau %}
+    {% for groupe in examens_par_niveau %}
+        <div class="section-titre" style="margin-top:28px;">
+            <h2>{{ groupe.list.0.get_niveau_difficulte_display }}</h2>
         </div>
+        {% for examen in groupe.list %}
+            <div class="carte-examen">
+                <div>
+                    <span class="matiere-tag">{{ examen.cours.matiere.nom }}</span>
+                    <h3>{{ examen.titre }}</h3>
+                    <p class="date-examen">Publié le {{ examen.date_publication|date:"d F Y" }} · {{ examen.cours.titre }}</p>
+                </div>
+                <a href="{% url 'evaluations:passer_examen' examen.pk %}" class="btn btn-primaire">Commencer</a>
+            </div>
+        {% endfor %}
     {% endfor %}
 {% else %}
     <div class="carte">

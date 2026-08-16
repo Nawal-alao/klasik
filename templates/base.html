@@ -33,11 +33,17 @@
                         <a href="{% url 'dashboard:dashboard_eleve' %}">Tableau de bord</a>
                         <a href="{% url 'pedagogie:liste_cours' %}">Cours</a>
                         <a href="{% url 'evaluations:liste_examens' %}">Examens</a>
+                        <a href="{% url 'comptes:liste_mentors' %}">Mentors</a>
+                        <a href="{% url 'communaute:liste_conversations' %}">Messages</a>
                         <a href="{% url 'communaute:liste_groupes' %}">Communauté</a>
                         <a href="{% url 'abonnements:mon_abonnement' %}">Abonnement</a>
+                        <a href="{% url 'comptes:profil_eleve' %}">Mon profil</a>
                     {% elif user.profil_mentor %}
                         <a href="{% url 'dashboard:dashboard_mentor' %}">Tableau de bord</a>
+                        <a href="{% url 'pedagogie:liste_cours' %}">Cours</a>
+                        <a href="{% url 'communaute:liste_conversations' %}">Messages</a>
                         <a href="{% url 'communaute:liste_groupes' %}">Communauté</a>
+                        <a href="{% url 'comptes:profil_mentor' %}">Mon profil</a>
                     {% endif %}
 
                     <div class="nav-actions">

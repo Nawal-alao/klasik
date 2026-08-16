@@ -17,11 +17,23 @@
             expire le {{ abonnement_actif.date_fin|date:"d F Y" }}
         </p>
 
-        <form method="post" action="{% url 'abonnements:annuler' %}" style="margin-top:20px;"
-              onsubmit="return confirm('Confirmer l\'annulation de ton abonnement ?');">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-secondaire">Annuler mon abonnement</button>
-        </form>
+        <button type="button" class="btn btn-secondaire" style="margin-top:20px;"
+                onclick="document.getElementById('dialogue-annulation').showModal()">
+            Annuler mon abonnement
+        </button>
+
+        <dialog class="dialogue" id="dialogue-annulation">
+            <h3>Annuler ton abonnement ?</h3>
+            <p class="texte-doux">Tu perdras l'accès aux mentors immédiatement. Tu pourras te réabonner à tout moment.</p>
+            <form method="post" action="{% url 'abonnements:annuler' %}">
+                {% csrf_token %}
+                <div class="actions-dialogue">
+                    <button type="button" class="btn btn-secondaire"
+                            onclick="document.getElementById('dialogue-annulation').close()">Garder mon abonnement</button>
+                    <button type="submit" class="btn btn-primaire">Confirmer l'annulation</button>
+                </div>
+            </form>
+        </dialog>
     {% else %}
         <div class="etat-vide">
             <p>Tu n'as pas d'abonnement actif pour le moment. Souscris pour débloquer les mentors et l'accès complet aux cours.</p>

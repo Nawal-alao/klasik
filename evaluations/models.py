@@ -9,18 +9,21 @@ class Examen(models.Model):
         IA = "IA", "Généré par IA"
         MANUEL = "MANUEL", "Créé par un mentor/professeur"
  
-    # NOUVEAU — même principe que Cours.StatutValidation
     class StatutValidation(models.TextChoices):
         EN_ATTENTE = "EN_ATTENTE", "En attente"
         VALIDE = "VALIDE", "Validé"
         REJETE = "REJETE", "Rejeté"
  
+    # NOUVEAU
+    class NiveauDifficulte(models.TextChoices):
+        FACILE = "FACILE", "Facile"
+        MOYEN = "MOYEN", "Moyen"
+        DIFFICILE = "DIFFICILE", "Difficile"
+ 
     titre = models.CharField(max_length=200)
     cours = models.ForeignKey("pedagogie.Cours", on_delete=models.CASCADE, related_name="examens")
     type_generation = models.CharField(max_length=10, choices=TypeGeneration.choices)
     date_publication = models.DateTimeField()
- 
-    # NOUVEAUX CHAMPS — symétriques à Cours
     statut_validation = models.CharField(
         max_length=10, choices=StatutValidation.choices, default=StatutValidation.EN_ATTENTE
     )
@@ -29,8 +32,14 @@ class Examen(models.Model):
     )
     date_validation = models.DateTimeField(null=True, blank=True)
  
+    # NOUVEAU
+    niveau_difficulte = models.CharField(
+        max_length=10, choices=NiveauDifficulte.choices, default=NiveauDifficulte.MOYEN
+    )
+ 
     def __str__(self):
-        return self.titre
+        return f"{self.titre} ({self.get_niveau_difficulte_display()})"
+ 
  
  
 class Question(models.Model):

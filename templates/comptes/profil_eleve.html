@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block titre %}Mon profil — Évoly{% endblock %}
+
+{% block content %}
+<div class="conteneur-auth">
+    <p class="eyebrow">Mon compte</p>
+    <h1>Mon profil</h1>
+    <p class="sous-titre">Mets à jour tes informations, notamment ta classe quand tu passes au niveau supérieur.</p>
+
+    <div class="carte-auth">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<p class="champ-erreur">{{ field.errors|striptags }}</p>{% endif %}
+            {% endfor %}
+            <button type="submit" class="btn btn-primaire">Enregistrer</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

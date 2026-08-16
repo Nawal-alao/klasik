@@ -15,6 +15,10 @@ class DashboardEleveView(LoginRequiredMixin, TemplateView):
         context["eleve"] = eleve
         context["progressions"] = eleve.progressions.all()
         context["abonnement"] = eleve.abonnements.filter(statut="ACTIF").first()
+        # NOUVEAU: mentors suivis
+        context["suivis_mentors"] = eleve.suivis_mentors.filter(actif=True).select_related(
+            "mentor", "matiere"
+        )
         return context
 
 

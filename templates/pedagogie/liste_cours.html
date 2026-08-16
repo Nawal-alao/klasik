@@ -5,8 +5,12 @@
 {% block content %}
 <div class="entete-page">
     <p class="eyebrow">Pédagogie</p>
-    <h1>Tes cours</h1>
-    <p class="texte-doux">Filtrés automatiquement pour {{ request.user.profil_eleve.get_classe_scolaire_display }}{% if request.user.profil_eleve.serie != "AUCUNE" %}, série {{ request.user.profil_eleve.serie }}{% endif %}.</p>
+    <h1>{% if request.user.profil_mentor %}Tous les cours{% else %}Tes cours{% endif %}</h1>
+    {% if request.user.profil_eleve %}
+        <p class="texte-doux">Filtrés automatiquement pour {{ request.user.profil_eleve.get_classe_scolaire_display }}{% if request.user.profil_eleve.serie != "AUCUNE" %}, série {{ request.user.profil_eleve.serie }}{% endif %}.</p>
+    {% else %}
+        <p class="texte-doux">Accès libre à l'ensemble des cours validés, toutes classes confondues.</p>
+    {% endif %}
 </div>
 
 {% if cours_liste %}

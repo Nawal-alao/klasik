@@ -9,17 +9,32 @@ from .models import GroupeEtude, Message, MotInterdit, Signalement
 import string
 
 
+def _groupes_de_lutilisateur(user):
+    """
+    Retourne les GroupeEtude pertinents pour l'utilisateur connecté,
+    qu'il soit élève (filtré par classe/série) ou mentor (filtré par
+    les matières qu'il enseigne).
+    """
+    if hasattr(user, "profil_eleve"):
+        eleve = user.profil_eleve
+        return GroupeEtude.objects.filter(
+            classe_scolaire=eleve.classe_scolaire,
+            serie=eleve.serie,
+        )
+    elif hasattr(user, "profil_mentor"):
+        return GroupeEtude.objects.filter(matiere__in=user.profil_mentor.matieres.all())
+    return GroupeEtude.objects.none()
+ 
+ 
 class ListeGroupesView(LoginRequiredMixin, ListView):
     model = GroupeEtude
     template_name = "communaute/liste_groupes.html"
     context_object_name = "groupes"
-
+ 
     def get_queryset(self):
-        eleve = self.request.user.profil_eleve
-        return GroupeEtude.objects.filter(
-            classe_scolaire=eleve.classe_scolaire,
-            serie=eleve.serie,
-        ).select_related("matiere").order_by("matiere__nom", "nom")
+        return _groupes_de_lutilisateur(self.request.user).select_related("matiere").order_by(
+            "matiere__nom", "nom"
+        )
 
 
 class DetailGroupeView(LoginRequiredMixin, DetailView):
@@ -28,11 +43,8 @@ class DetailGroupeView(LoginRequiredMixin, DetailView):
     context_object_name = "groupe"
  
     def get_queryset(self):
-        eleve = self.request.user.profil_eleve
-        return GroupeEtude.objects.filter(
-            classe_scolaire=eleve.classe_scolaire,
-            serie=eleve.serie,
-        )
+        # Sécurité : même principe qu'avant, mais couvre maintenant les deux profils.
+        return _groupes_de_lutilisateur(self.request.user)
  
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

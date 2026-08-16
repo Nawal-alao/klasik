@@ -85,12 +85,13 @@ select:focus-visible, textarea:focus-visible {
 }
 
 .entete-conteneur {
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
 
 .logo {
@@ -100,6 +101,8 @@ select:focus-visible, textarea:focus-visible {
   color: var(--couleur-texte);
   text-decoration: none;
   letter-spacing: -0.01em;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .logo:hover { text-decoration: none; color: var(--couleur-accent); }
 .logo span { color: var(--couleur-accent); }
@@ -107,17 +110,24 @@ select:focus-visible, textarea:focus-visible {
 .nav-liens {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 18px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  min-width: 0;
 }
+.nav-liens::-webkit-scrollbar { display: none; }
 
 .nav-liens a {
   color: var(--couleur-texte);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .nav-liens a:hover { color: var(--couleur-accent); text-decoration: none; }
 
-.nav-actions { display: flex; align-items: center; gap: 12px; }
+.nav-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; white-space: nowrap; }
 
 .bouton-menu-mobile {
   display: none;
@@ -814,6 +824,95 @@ dialog.dialogue-signalement::backdrop { background: rgba(42,38,34,0.35); }
 dialog.dialogue-signalement h3 { margin-bottom: 6px; }
 
 /* ===========================================================
+   Recherche de mentors et profils
+   =========================================================== */
+.barre-filtre {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.barre-filtre select { margin-bottom: 0; max-width: 260px; }
+.barre-filtre a.reinitialiser { font-size: 0.85rem; color: var(--couleur-texte-doux); }
+
+.carte-mentor {
+  background: var(--couleur-fond-carte);
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  padding: 24px;
+}
+.carte-mentor .entete-mentor {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.carte-mentor h3 { margin: 0; }
+.carte-mentor .note {
+  font-family: var(--police-display);
+  font-weight: 600;
+  color: var(--couleur-accent);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+.carte-mentor .bio {
+  color: var(--couleur-texte-doux);
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+.carte-mentor .tags-matieres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.carte-mentor .matiere-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--couleur-accent);
+  background: var(--couleur-accent-doux);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.carte-mentor form { display: flex; gap: 8px; align-items: center; }
+.carte-mentor form select { margin-bottom: 0; flex: 1; }
+
+.notation-mentor {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.notation-mentor button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--couleur-bordure);
+}
+.notation-mentor button.remplie {
+  color: var(--couleur-accent);
+}
+
+/* Notation vecteur (ex: u⃗) dessinée en CSS plutôt qu'avec un caractère
+   Unicode combinant, pour ne pas dépendre du support de la police */
+.vecteur {
+  position: relative;
+  padding-right: 0.12em;
+}
+.vecteur::after {
+  content: "→";
+  position: absolute;
+  top: -0.75em;
+  left: 0;
+  font-size: 0.6em;
+  line-height: 1;
+}
+
+/* ===========================================================
    Pied de page
    =========================================================== */
 footer {
@@ -861,4 +960,34 @@ footer {
   }
 
   main { padding: 32px 18px 60px; }
+
+  /* Affinage mobile : empiler plutôt que tasser horizontalement */
+  .section-titre {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .liste-simple li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .liste-simple li > div:last-child {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .notation-mentor button {
+    font-size: 1.35rem;
+    padding: 6px;
+  }
+
+  .carte-examen {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .carte-examen .btn { width: 100%; }
 }

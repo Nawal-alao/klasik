@@ -11,8 +11,8 @@
 
 <div class="grille-stats">
     <div class="stat-carte">
-        <div class="valeur">{{ progressions|length }}</div>
-        <div class="label">Matière{{ progressions|length|pluralize }} suivie{{ progressions|length|pluralize }}</div>
+        <div class="valeur">{{ suivis_mentors|length }}</div>
+        <div class="label">Mentor{{ suivis_mentors|length|pluralize }} suivi{{ suivis_mentors|length|pluralize }}</div>
     </div>
     <div class="stat-carte">
         <div class="valeur">
@@ -24,6 +24,42 @@
         <div class="valeur">{{ eleve.date_inscription|date:"M Y" }}</div>
         <div class="label">Membre depuis</div>
     </div>
+</div>
+
+<div class="section-titre">
+    <h2>Mes mentors</h2>
+    <a href="{% url 'comptes:liste_mentors' %}">Trouver un mentor →</a>
+</div>
+
+<div class="carte" style="margin-bottom: 40px;">
+    {% if suivis_mentors %}
+        <ul class="liste-simple">
+            {% for suivi in suivis_mentors %}
+                <li>
+                    <div>
+                        <strong>{{ suivi.mentor.prenom }} {{ suivi.mentor.nom }}</strong>
+                        <span class="texte-doux"> — {{ suivi.matiere.nom }}</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:16px;">
+                        <form method="post" action="{% url 'comptes:noter_mentor' suivi.pk %}" class="notation-mentor">
+                            {% csrf_token %}
+                            {% for i in "12345" %}
+                                <button type="submit" name="note" value="{{ i }}"
+                                        class="{% if suivi.note_evaluation and i|add:'0' <= suivi.note_evaluation %}remplie{% endif %}"
+                                        title="Noter {{ i }}/5">★</button>
+                            {% endfor %}
+                        </form>
+                        <a href="{% url 'communaute:detail_conversation' suivi.pk %}" class="btn btn-secondaire">Écrire</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="etat-vide">
+            <p>Tu ne suis encore aucun mentor.</p>
+            <a href="{% url 'comptes:liste_mentors' %}" class="btn btn-primaire">Trouver un mentor</a>
+        </div>
+    {% endif %}
 </div>
 
 <div class="section-titre">

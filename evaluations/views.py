@@ -17,9 +17,11 @@ class ListeExamensDisponiblesView(LoginRequiredMixin, ListView):
             cours__classe_scolaire=eleve.classe_scolaire,
             cours__serie=eleve.serie,
             cours__statut_validation="VALIDE",
-            statut_validation="VALIDE",  # NOUVEAU : l'examen lui-même doit être validé
+            statut_validation="VALIDE",
             date_publication__lt=timezone.now(),
-        ).select_related("cours", "cours__matiere").order_by("-date_publication")
+        ).select_related("cours", "cours__matiere").order_by(
+            "niveau_difficulte", "-date_publication"  # NOUVEAU : tri requis pour {% regroup %}
+        )
 
 
 class ResultatExamenDetailView(LoginRequiredMixin, DetailView):

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block titre %}Trouver un mentor — Évoly{% endblock %}
+
+{% block content %}
+<div class="entete-page">
+    <p class="eyebrow">Mentorat</p>
+    <h1>Trouver un mentor</h1>
+    <p class="texte-doux">Choisis un mentor selon la matière où tu as besoin d'aide.</p>
+</div>
+
+<form method="get" class="barre-filtre">
+    <select name="matiere" onchange="this.form.submit()">
+        <option value="">Toutes les matières</option>
+        {% for matiere in matieres %}
+            <option value="{{ matiere.id }}" {% if matiere_selectionnee == matiere.id|stringformat:"s" %}selected{% endif %}>
+                {{ matiere.nom }}
+            </option>
+        {% endfor %}
+    </select>
+    {% if matiere_selectionnee %}
+        <a href="{% url 'comptes:liste_mentors' %}" class="reinitialiser">Réinitialiser</a>
+    {% endif %}
+</form>
+
+{% if mentors %}
+    <div class="grille-cartes">
+        {% for mentor in mentors %}
+            <div class="carte-mentor">
+                <div class="entete-mentor">
+                    <h3>{{ mentor.prenom }} {{ mentor.nom }}</h3>
+                    {% if mentor.note_moyenne %}
+                        <span class="note">★ {{ mentor.note_moyenne|floatformat:1 }}/5</span>
+                    {% endif %}
+                </div>
+                {% if mentor.bio %}<p class="bio">{{ mentor.bio|truncatewords:24 }}</p>{% endif %}
+                <div class="tags-matieres">
+                    {% for matiere in mentor.matieres.all %}
+                        <span class="matiere-tag">{{ matiere.nom }}</span>
+                    {% endfor %}
+                </div>
+                <form method="post" action="{% url 'comptes:suivre_mentor' mentor.pk %}">
+                    {% csrf_token %}
+                    <select name="matiere" required>
+                        {% for matiere in mentor.matieres.all %}
+                            <option value="{{ matiere.id }}">{{ matiere.nom }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primaire">Suivre</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="carte">
+        <div class="etat-vide">
+            <p>Aucun mentor disponible pour cette matière pour le moment.</p>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
