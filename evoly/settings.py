@@ -42,6 +42,7 @@ SECRET_KEY = (
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CSRF_COOKIE_HTTPONLY = True
 
 
 # Application definition
@@ -114,9 +115,14 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'full',
         'height': 400,
         'width': '100%',
+    },
+    'contenu_interactif': {
+        'toolbar': 'full',
+        'height': 400,
+        'width': '100%',
         'extraAllowedContent': 'script(*); iframe[*]',
         'allowedContent': True,
-    }
+    },
 }
 
 
