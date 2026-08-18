@@ -88,6 +88,29 @@ class SuivreMentorAPIView(APIView):
         return Response(serializer.data, status=status_code)
 
 
+class MesSuivisAPIView(generics.ListAPIView):
+    serializer_class = SuiviMentorSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if hasattr(user, 'profil_eleve'):
+            return SuiviMentor.objects.filter(
+                eleve=user.profil_eleve, actif=True
+            ).select_related('mentor', 'matiere')
+        return SuiviMentor.objects.none()
+
+
+class SuivisMentorAPIView(generics.ListAPIView):
+    serializer_class = SuiviMentorSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return SuiviMentor.objects.filter(
+            mentor=self.request.user.profil_mentor
+        ).select_related('eleve', 'matiere')
+
+
 class NoterSuiviAPIView(APIView):
     permission_classes = [IsAuthenticated]
 

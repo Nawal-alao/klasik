@@ -37,10 +37,11 @@ class MentorSerializer(serializers.ModelSerializer):
 class SuiviMentorSerializer(serializers.ModelSerializer):
     eleve_name = serializers.SerializerMethodField(read_only=True)
     mentor_name = serializers.SerializerMethodField(read_only=True)
+    matiere_nom = serializers.CharField(source='matiere.nom', read_only=True)
 
     class Meta:
         model = SuiviMentor
-        fields = ['id', 'eleve', 'eleve_name', 'mentor', 'mentor_name', 'matiere', 'date_debut', 'actif', 'note_evaluation']
+        fields = ['id', 'eleve', 'eleve_name', 'mentor', 'mentor_name', 'matiere', 'matiere_nom', 'date_debut', 'actif', 'note_evaluation']
         read_only_fields = ['id', 'date_debut']
 
     def get_eleve_name(self, obj):
