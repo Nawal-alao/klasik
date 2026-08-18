@@ -76,8 +76,8 @@ export default function Layout() {
                   </>
                 ) : (
                   <>
-                    <Link to="/inscription/eleve">Je suis élève</Link>
-                    <Link to="/inscription/mentor">Je suis mentor</Link>
+                    <Link to="/cours">Cours</Link>
+                    <Link to="/mentors">Mentors</Link>
 
                     <div className="nav-actions">
                       <Link to="/connexion" className="btn btn-secondaire">Se connecter</Link>

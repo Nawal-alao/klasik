@@ -22,8 +22,26 @@ class SequenceSerializer(serializers.ModelSerializer):
 
 class CoursSerializer(serializers.ModelSerializer):
     sequences = SequenceSerializer(many=True, read_only=True)
+    termine = serializers.SerializerMethodField()
+    favori = serializers.SerializerMethodField()
 
     class Meta:
         model = Cours
-        fields = ['id', 'titre', 'description', 'matiere', 'classe_scolaire', 'serie', 'contenu', 'statut_validation', 'sequences']
-        read_only_fields = ['id', 'statut_validation', 'sequences']
+        fields = ['id', 'titre', 'description', 'matiere', 'classe_scolaire', 'serie', 'contenu', 'statut_validation', 'sequences', 'termine', 'favori']
+        read_only_fields = ['id', 'statut_validation', 'sequences', 'termine', 'favori']
+
+    def get_termine(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        if not hasattr(request.user, 'profil_eleve'):
+            return False
+        return obj.termine_par.filter(eleve=request.user.profil_eleve).exists()
+
+    def get_favori(self, obj):
+        request = self.context.get('request')
+        if not request or not request.user.is_authenticated:
+            return False
+        if not hasattr(request.user, 'profil_eleve'):
+            return False
+        return obj.favori_par.filter(eleve=request.user.profil_eleve).exists()

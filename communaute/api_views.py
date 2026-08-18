@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from .models import GroupeEtude, Message, Signalement, MessagePrive
 from .serializers import (
     GroupeSerializer, GroupeDetailSerializer, MessageSerializer,
-    SignalementSerializer, MessagePriveSerializer,
+    SignalementSerializer, MessagePriveSerializer, ProposerGroupeSerializer,
 )
 from .services import contient_mot_interdit
 from .views import _groupes_de_lutilisateur, _suivis_de_lutilisateur
@@ -124,3 +124,32 @@ class EnvoyerMessagePriveAPIView(APIView):
 
         serializer = MessagePriveSerializer(msg)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProposerGroupeAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if not hasattr(request.user, 'profil_eleve'):
+            return Response(
+                {'detail': 'Seuls les élèves peuvent proposer un groupe.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = ProposerGroupeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        eleve = request.user.profil_eleve
+        groupe = GroupeEtude.objects.create(
+            nom=serializer.validated_data['nom'],
+            classe_scolaire=eleve.classe_scolaire,
+            serie=eleve.serie,
+            matiere=serializer.validated_data['matiere'],
+            statut_validation=GroupeEtude.StatutValidation.EN_ATTENTE,
+            cree_par=request.user,
+        )
+
+        return Response(
+            GroupeSerializer(groupe).data,
+            status=status.HTTP_201_CREATED,
+        )

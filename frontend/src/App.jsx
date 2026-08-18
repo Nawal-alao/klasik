@@ -38,6 +38,7 @@ export default function App() {
             <Route path="/dashboard/eleve" element={<RouteProtegee><DashboardEleve /></RouteProtegee>} />
             <Route path="/dashboard/mentor" element={<RouteProtegee><DashboardMentor /></RouteProtegee>} />
             <Route path="/cours" element={<RouteProtegee><CoursList /></RouteProtegee>} />
+            <Route path="/cours/favoris" element={<RouteProtegee><CoursList /></RouteProtegee>} />
             <Route path="/cours/:id" element={<RouteProtegee><CoursDetail /></RouteProtegee>} />
             <Route path="/examens" element={<RouteProtegee><ExamensList /></RouteProtegee>} />
             <Route path="/examens/:id/passer" element={<RouteProtegee><PasserExamen /></RouteProtegee>} />

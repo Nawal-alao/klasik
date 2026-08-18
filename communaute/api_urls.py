@@ -3,6 +3,7 @@ from . import api_views
 
 urlpatterns = [
     path('groupes/', api_views.GroupesListAPIView.as_view(), name='api_groupes_list'),
+    path('groupes/proposer/', api_views.ProposerGroupeAPIView.as_view(), name='api_groupe_proposer'),
     path('groupes/<int:pk>/', api_views.GroupeDetailAPIView.as_view(), name='api_groupe_detail'),
     path('groupes/<int:pk>/envoyer/', api_views.EnvoyerMessageAPIView.as_view(), name='api_groupe_envoyer'),
 

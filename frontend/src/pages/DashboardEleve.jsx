@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Bookmark, Users, CreditCard, CalendarDays } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
 
@@ -40,16 +41,34 @@ export default function DashboardEleve() {
 
       <div className="grille-stats">
         <div className="stat-carte">
-          <div className="valeur">{suivis.length}</div>
+          <div className="stat-carte-haut">
+            <div className="stat-carte-icon bleu">
+              <Users size={20} strokeWidth={2} />
+            </div>
+            <div className="valeur">{suivis.length}</div>
+          </div>
           <div className="label">Mentor{suivis.length > 1 ? 's' : ''} suivi{suivis.length > 1 ? 's' : ''}</div>
+          <p className="stat-carte-desc">Accompagnement personnalisé matière par matière</p>
         </div>
         <div className="stat-carte">
-          <div className="valeur">{abonnement ? 'Actif' : 'Inactif'}</div>
+          <div className="stat-carte-haut">
+            <div className="stat-carte-icon accent">
+              <CreditCard size={20} strokeWidth={2} />
+            </div>
+            <div className="valeur">{abonnement ? 'Actif' : 'Inactif'}</div>
+          </div>
           <div className="label">Statut de l'abonnement</div>
+          <p className="stat-carte-desc">{abonnement ? `Formule ${abonnement.formule}` : 'Souscris pour débloquer les mentors'}</p>
         </div>
         <div className="stat-carte">
-          <div className="valeur">{inscriptionDate}</div>
+          <div className="stat-carte-haut">
+            <div className="stat-carte-icon vert">
+              <CalendarDays size={20} strokeWidth={2} />
+            </div>
+            <div className="valeur">{inscriptionDate}</div>
+          </div>
           <div className="label">Membre depuis</div>
+          <p className="stat-carte-desc">Rejoins la communauté des élèves béninois</p>
         </div>
       </div>
 
@@ -90,7 +109,12 @@ export default function DashboardEleve() {
 
       <div className="section-titre">
         <h2>Ma progression</h2>
-        <Link to="/cours">Voir tous les cours →</Link>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Link to="/cours/favoris" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <Bookmark size={14} /> Favoris
+          </Link>
+          <Link to="/cours">Voir tous les cours →</Link>
+        </div>
       </div>
       <div className="carte" style={{ marginBottom: 40 }}>
         {progressions.length > 0 ? (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Users, Activity, Star, GraduationCap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
 
@@ -25,16 +26,36 @@ export default function DashboardMentor() {
 
       <div className="grille-stats">
         <div className="stat-carte">
-          <div className="valeur">{elevesUniques.length}</div>
+          <div className="stat-carte-haut">
+            <div className="stat-carte-icon bleu">
+              <Users size={20} strokeWidth={2} />
+            </div>
+            <div className="valeur">{elevesUniques.length}</div>
+          </div>
           <div className="label">Élève{elevesUniques.length > 1 ? 's' : ''} suivi{elevesUniques.length > 1 ? 's' : ''}</div>
+          <p className="stat-carte-desc">Total d'élèves inscrits sous ton encadrement</p>
         </div>
+
         <div className="stat-carte">
-          <div className="valeur">{actifs.length}</div>
+          <div className="stat-carte-haut">
+            <div className="stat-carte-icon vert">
+              <Activity size={20} strokeWidth={2} />
+            </div>
+            <div className="valeur">{actifs.length}</div>
+          </div>
           <div className="label">Suivi{actifs.length > 1 ? 's' : ''} actif{actifs.length > 1 ? 's' : ''}</div>
+          <p className="stat-carte-desc">Élèves avec qui tu échanges en ce moment</p>
         </div>
+
         <div className="stat-carte">
-          <div className="valeur">{user.note_moyenne != null ? `${Number(user.note_moyenne).toFixed(1)}/5` : '—'}</div>
+          <div className="stat-carte-haut">
+            <div className="stat-carte-icon accent">
+              <Star size={20} strokeWidth={2} />
+            </div>
+            <div className="valeur">{user.note_moyenne != null ? `${Number(user.note_moyenne).toFixed(1)}/5` : '—'}</div>
+          </div>
           <div className="label">Note moyenne</div>
+          <p className="stat-carte-desc">Appréciation donnée par tes élèves</p>
         </div>
       </div>
 
@@ -56,7 +77,13 @@ export default function DashboardMentor() {
           </ul>
         ) : (
           <div className="etat-vide">
-            <p>Aucun élève ne te suit encore. Ton profil deviendra visible une fois les élèves inscrits sur la plateforme.</p>
+            <div className="etat-vide-icone">
+              <GraduationCap size={40} strokeWidth={1.2} />
+            </div>
+            <p>Aucun élève ne te suit encore.</p>
+            <p className="texte-doux" style={{ fontSize: '0.9rem' }}>
+              Ton profil deviendra visible une fois les élèves inscrits sur la plateforme.
+            </p>
           </div>
         )}
       </div>

@@ -1,28 +1,36 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { BookOpen, Users, TrendingUp, MessageCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+
+const fonctionnalites = [
+  {
+    icon: BookOpen,
+    titre: 'Cours personnalisés',
+    description: 'Chaque cours est filtré selon ta classe et ta série, tirés directement des manuels officiels et validés par de vrais professeurs.',
+  },
+  {
+    icon: Users,
+    titre: 'Mentors humains',
+    description: 'Suis plusieurs mentors selon les matières, et évalue-les pour aider les autres élèves à trouver le bon accompagnement.',
+  },
+  {
+    icon: TrendingUp,
+    titre: 'Progression suivie',
+    description: 'Chaque examen affine ton profil, matière par matière, notion par notion, pour cibler exactement ce qu\'il te reste à travailler.',
+  },
+  {
+    icon: MessageCircle,
+    titre: 'Communauté par série',
+    description: 'Rejoins des groupes d\'étude avec des élèves de ta classe et ta série, pour apprendre ensemble, pas tout seul.',
+  },
+]
 
 export default function Home() {
   const { user, userType } = useAuth()
 
-  const actionsNonConnecte = (
-    <>
-      <Link to="/inscription/eleve" className="btn btn-primaire">Je suis élève</Link>
-      <Link to="/inscription/mentor" className="btn btn-secondaire">Je suis mentor</Link>
-    </>
-  )
-
-  const actionsConnecte = (
-    <Link
-      to={userType === 'mentor' ? '/dashboard/mentor' : '/dashboard/eleve'}
-      className="btn btn-primaire"
-    >
-      Aller à mon tableau de bord
-    </Link>
-  )
-
   return (
-    <main>
+    <main className="page-accueil">
       <section className="hero">
         <p className="eyebrow">Système éducatif béninois</p>
         <h1>Des cours pensés pour ta classe, ta série, et toi.</h1>
@@ -31,7 +39,26 @@ export default function Home() {
           et suit ta progression matière par matière.
         </p>
         <div className="hero-actions">
-          {user ? actionsConnecte : actionsNonConnecte}
+          {user ? (
+            <Link
+              to={userType === 'mentor' ? '/dashboard/mentor' : '/dashboard/eleve'}
+              className="btn btn-primaire"
+            >
+              Aller à mon tableau de bord
+            </Link>
+          ) : (
+            <>
+              <Link to="/inscription/eleve" className="btn btn-primaire">Je suis élève</Link>
+              <Link to="/inscription/mentor" className="btn btn-secondaire">Je suis mentor</Link>
+            </>
+          )}
+        </div>
+
+        <div className="hero-illustration">
+          <div className="hero-placeholder">
+            <BookOpen size={48} strokeWidth={1.2} />
+            <p>Image d'illustration à venir</p>
+          </div>
         </div>
       </section>
 
@@ -40,26 +67,15 @@ export default function Home() {
         <h2>Une plateforme construite autour de ton parcours scolaire</h2>
 
         <div className="grille-cartes">
-          <div className="carte-fonctionnalite">
-            <div className="numero">01</div>
-            <h3>Cours personnalisés</h3>
-            <p>Chaque cours est filtré selon ta classe et ta série, tirés directement des manuels officiels et validés par de vrais professeurs.</p>
-          </div>
-          <div className="carte-fonctionnalite">
-            <div className="numero">02</div>
-            <h3>Mentors humains</h3>
-            <p>Suis plusieurs mentors selon les matières, et évalue-les pour aider les autres élèves à trouver le bon accompagnement.</p>
-          </div>
-          <div className="carte-fonctionnalite">
-            <div className="numero">03</div>
-            <h3>Progression suivie</h3>
-            <p>Chaque examen affine ton profil, matière par matière, notion par notion, pour cibler exactement ce qu'il te reste à travailler.</p>
-          </div>
-          <div className="carte-fonctionnalite">
-            <div className="numero">04</div>
-            <h3>Communauté par série</h3>
-            <p>Rejoins des groupes d'étude avec des élèves de ta classe et ta série, pour apprendre ensemble, pas tout seul.</p>
-          </div>
+          {fonctionnalites.map((f) => (
+            <div key={f.titre} className="carte-fonctionnalite">
+              <div className="icone-fonctionnalite">
+                <f.icon size={28} strokeWidth={1.5} />
+              </div>
+              <h3>{f.titre}</h3>
+              <p>{f.description}</p>
+            </div>
+          ))}
         </div>
       </section>
     </main>

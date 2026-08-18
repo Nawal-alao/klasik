@@ -317,6 +317,33 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ===========================================================
+   Champs avec icône — profils premium
+   =========================================================== */
+.champ-icon {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.champ-icon > svg {
+  margin-top: 32px;
+  color: var(--couleur-texte-doux);
+  flex-shrink: 0;
+}
+.champ-icon-champs {
+  flex: 1;
+  min-width: 0;
+}
+.champ-icon-champs label {
+  margin-bottom: 4px;
+}
+.champ-icon-champs input,
+.champ-icon-champs select,
+.champ-icon-champs textarea {
+  margin-bottom: 0;
+}
+
+/* ===========================================================
    Formulaire mentor — cases à cocher matières
    =========================================================== */
 .champ-group {
@@ -432,14 +459,44 @@ input:focus, select:focus, textarea:focus {
   border-radius: var(--rayon);
   padding: 28px;
 }
-.carte-fonctionnalite .numero {
-  font-family: var(--police-display);
-  font-size: 1.5rem;
+.carte-fonctionnalite .icone-fonctionnalite {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--couleur-accent-doux);
   color: var(--couleur-accent);
-  margin-bottom: 12px;
+  border-radius: var(--rayon-petit);
+  margin-bottom: 16px;
 }
 .carte-fonctionnalite h3 { margin-bottom: 8px; }
 .carte-fonctionnalite p { color: var(--couleur-texte-doux); margin: 0; font-size: 0.95rem; }
+
+.hero-illustration {
+  margin-top: 48px;
+}
+.hero-placeholder {
+  max-width: 520px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  background: var(--couleur-bordure);
+  border-radius: var(--rayon);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--couleur-texte-doux);
+}
+.hero-placeholder svg {
+  opacity: 0.4;
+}
+.hero-placeholder p {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
 
 /* ===========================================================
    État vide
@@ -450,6 +507,18 @@ input:focus, select:focus, textarea:focus {
   color: var(--couleur-texte-doux);
 }
 .etat-vide p { margin-bottom: 20px; }
+.etat-vide-icone {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--couleur-accent-doux);
+  color: var(--couleur-accent);
+  border-radius: 50%;
+  opacity: 0.6;
+}
 
 /* ===========================================================
    Dashboards — stats, progression, badges
@@ -477,6 +546,24 @@ input:focus, select:focus, textarea:focus {
   border-radius: var(--rayon);
   padding: 20px;
 }
+.stat-carte .stat-carte-haut {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.stat-carte-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.stat-carte-icon.bleu { background: #EAF1F6; color: var(--couleur-info); }
+.stat-carte-icon.vert { background: #EAF3EC; color: var(--couleur-succes); }
+.stat-carte-icon.accent { background: var(--couleur-accent-doux); color: var(--couleur-accent); }
 .stat-carte .valeur {
   font-family: var(--police-display);
   font-size: 2rem;
@@ -488,6 +575,12 @@ input:focus, select:focus, textarea:focus {
 .stat-carte .label {
   font-size: 0.85rem;
   color: var(--couleur-texte-doux);
+}
+.stat-carte .stat-carte-desc {
+  font-size: 0.8rem;
+  color: var(--couleur-texte-doux);
+  opacity: 0.7;
+  margin: 4px 0 0 0;
 }
 
 .section-titre {
@@ -530,6 +623,27 @@ input:focus, select:focus, textarea:focus {
   height: 100%;
   border-radius: 999px;
   transition: width 0.4s ease;
+}
+
+/* ===========================================================
+   Notation étoiles
+   =========================================================== */
+.notation-mentor {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.notation-mentor button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--couleur-bordure);
+}
+.notation-mentor button.remplie {
+  color: var(--couleur-accent);
 }
 
 .ligne-progression {
@@ -978,9 +1092,108 @@ footer {
     padding-top: 12px;
   }
 
+  /* Touch targets — nav links min 44px */
+  .nav-liens a, .nav-liens .btn {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
   main { padding: 32px 18px 60px; }
 
   .hero { padding: 32px 0 48px; }
   .hero-actions { flex-direction: column; }
   .hero-actions .btn { width: 100%; }
+  .hero-placeholder { display: none; }
+
+  .grille-cartes {
+    grid-template-columns: 1fr;
+  }
+
+  /* Empiler les titres de section + lien */
+  .section-titre {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  /* Listes : colonne verticale */
+  .liste-simple li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .liste-simple li > div:last-child {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Notation étoiles — cible tactile 44px */
+  .notation-mentor button {
+    font-size: 1.35rem;
+    padding: 6px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Cartes examen : empiler + bouton pleine largeur */
+  .carte-examen {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .carte-examen .btn { width: 100%; }
+
+  /* Carte mentor form : empiler select + bouton */
+  .carte-mentor form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .carte-mentor form .btn { width: 100%; }
+
+  /* Cours détail : sidebar sous le contenu */
+  .mise-en-page-cours {
+    grid-template-columns: 1fr;
+  }
+  .sommaire-sequences {
+    position: static;
+  }
+
+  /* Messages : formulaire empilé */
+  .formulaire-message form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .formulaire-message .btn { width: 100%; }
+
+  /* Signaler : touch target 44px */
+  .lien-signaler {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 0;
+  }
+
+  /* Stat cartes : icône plus petite + cible tactile */
+  .stat-carte-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .stat-carte-icon svg { width: 18px; height: 18px; }
+
+  /* Champs profil : icône au-dessus sur mobile */
+  .champ-icon {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .champ-icon > svg {
+    margin-top: 0;
+  }
+
+  /* Dialogues : pleine largeur */
+  dialog.dialogue {
+    width: calc(100% - 36px);
+    max-width: 400px;
+  }
 }

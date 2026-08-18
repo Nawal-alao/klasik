@@ -81,3 +81,27 @@ class Sequence(models.Model):
 
     def __str__(self):
         return f"{self.cours.titre} — Séquence {self.ordre}: {self.titre}"
+
+
+class CoursTermine(models.Model):
+    eleve = models.ForeignKey('comptes.Eleve', on_delete=models.CASCADE, related_name="cours_termines")
+    cours = models.ForeignKey(Cours, on_delete=models.CASCADE, related_name="termine_par")
+    date_completion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("eleve", "cours")
+
+    def __str__(self):
+        return f"{self.eleve} a terminé {self.cours}"
+
+
+class CoursFavori(models.Model):
+    eleve = models.ForeignKey('comptes.Eleve', on_delete=models.CASCADE, related_name="cours_favoris")
+    cours = models.ForeignKey(Cours, on_delete=models.CASCADE, related_name="favori_par")
+    date_ajout = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("eleve", "cours")
+
+    def __str__(self):
+        return f"{self.eleve} a en favori {self.cours}"

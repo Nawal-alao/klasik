@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Navigate } from 'react-router-dom'
+import { User, UserCircle, Calendar, BookOpen, FileText } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
 
@@ -65,38 +65,68 @@ export default function Profil() {
             : 'Tiens ta bio et tes matières à jour pour attirer les bons élèves.'}
         </p>
 
-        <div className="carte-auth">
+        <div className="carte-auth verre">
           <form onSubmit={handleSubmit} noValidate>
             {saved && <p className="champ-erreur" style={{ color: 'var(--couleur-succes)' }}>Profil mis à jour !</p>}
 
-            <label htmlFor="prenom">Prénom</label>
-            <input id="prenom" type="text" required value={form.prenom || ''} onChange={set('prenom')} />
+            <div className="champ-icon">
+              <User size={18} strokeWidth={2} />
+              <div className="champ-icon-champs">
+                <label htmlFor="prenom">Prénom</label>
+                <input id="prenom" type="text" required value={form.prenom || ''} onChange={set('prenom')} />
+              </div>
+            </div>
             {erreurs.prenom && <p className="champ-erreur">{erreurs.prenom}</p>}
 
-            <label htmlFor="nom">Nom</label>
-            <input id="nom" type="text" required value={form.nom || ''} onChange={set('nom')} />
+            <div className="champ-icon">
+              <UserCircle size={18} strokeWidth={2} />
+              <div className="champ-icon-champs">
+                <label htmlFor="nom">Nom</label>
+                <input id="nom" type="text" required value={form.nom || ''} onChange={set('nom')} />
+              </div>
+            </div>
             {erreurs.nom && <p className="champ-erreur">{erreurs.nom}</p>}
 
             {userType === 'eleve' ? (
               <>
-                <label htmlFor="age">Âge</label>
-                <input id="age" type="number" min="8" max="25" required value={form.age || ''} onChange={set('age')} />
+                <div className="champ-icon">
+                  <Calendar size={18} strokeWidth={2} />
+                  <div className="champ-icon-champs">
+                    <label htmlFor="age">Âge</label>
+                    <input id="age" type="number" min="8" max="25" required value={form.age || ''} onChange={set('age')} />
+                  </div>
+                </div>
                 {erreurs.age && <p className="champ-erreur">{erreurs.age}</p>}
 
-                <label htmlFor="classe_scolaire">Classe</label>
-                <select id="classe_scolaire" value={form.classe_scolaire || '6EME'} onChange={set('classe_scolaire')}>
-                  {CLASSES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-                </select>
+                <div className="champ-icon">
+                  <BookOpen size={18} strokeWidth={2} />
+                  <div className="champ-icon-champs">
+                    <label htmlFor="classe_scolaire">Classe</label>
+                    <select id="classe_scolaire" value={form.classe_scolaire || '6EME'} onChange={set('classe_scolaire')}>
+                      {CLASSES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                    </select>
+                  </div>
+                </div>
 
-                <label htmlFor="serie">Série</label>
-                <select id="serie" value={form.serie || 'AUCUNE'} onChange={set('serie')}>
-                  {SERIES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-                </select>
+                <div className="champ-icon">
+                  <BookOpen size={18} strokeWidth={2} />
+                  <div className="champ-icon-champs">
+                    <label htmlFor="serie">Série</label>
+                    <select id="serie" value={form.serie || 'AUCUNE'} onChange={set('serie')}>
+                      {SERIES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                    </select>
+                  </div>
+                </div>
               </>
             ) : (
               <>
-                <label htmlFor="bio">Bio</label>
-                <textarea id="bio" rows="3" value={form.bio || ''} onChange={set('bio')} />
+                <div className="champ-icon">
+                  <FileText size={18} strokeWidth={2} />
+                  <div className="champ-icon-champs">
+                    <label htmlFor="bio">Bio</label>
+                    <textarea id="bio" rows="3" value={form.bio || ''} onChange={set('bio')} />
+                  </div>
+                </div>
                 {erreurs.bio && <p className="champ-erreur">{erreurs.bio}</p>}
               </>
             )}

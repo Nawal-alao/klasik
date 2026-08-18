@@ -1,0 +1,167 @@
+/* ===========================================================
+   Fondations premium — global.css
+   Importé après theme.css pour surcharger/couvrir au besoin.
+   =========================================================== */
+
+/* -----------------------------------------------------------
+   Ombres riches
+   ----------------------------------------------------------- */
+:root {
+  --ombre-carte-premium: 0 4px 24px rgba(42, 38, 34, 0.08);
+}
+
+/* -----------------------------------------------------------
+   Verre — glassmorphisme ciblé
+   Usage réservé : cartes de profil, modales/dialogues uniquement.
+   Jamais sur des listes longues ni éléments répétés en grand
+   nombre (coût backdrop-filter sur mobile bas de gamme).
+   ----------------------------------------------------------- */
+.verre {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* -----------------------------------------------------------
+   Badge « Terminé »
+   Utilisation : <span className="badge badge-termine">Terminé</span>
+   L'icône Check de lucide-react doit être rendue à côté du texte
+   dans le JSX consommateur.
+   ----------------------------------------------------------- */
+.badge-termine {
+  background: #EAF3EC;
+  color: var(--couleur-succes);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* -----------------------------------------------------------
+   Bouton favori — état actif / inactif
+   Utilisation : <button className="bouton-favori …">
+   L'icône Bookmark de lucide-react doit être rendue à l'intérieur.
+   ----------------------------------------------------------- */
+.bouton-favori {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--rayon-petit);
+  color: var(--couleur-texte-doux);
+  font-family: var(--police-corps);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.bouton-favori:hover {
+  color: var(--couleur-accent);
+  background: var(--couleur-accent-doux);
+}
+
+/* État actif — icône remplie, texte accent */
+.bouton-favori.actif {
+  color: var(--couleur-accent);
+}
+
+.bouton-favori.actif svg {
+  fill: var(--couleur-accent);
+}
+
+/* Focus visible cohérent */
+.bouton-favori:focus-visible {
+  outline: 2px solid var(--couleur-accent);
+  outline-offset: 2px;
+}
+
+/* -----------------------------------------------------------
+   Ligne titre cours + bouton terminer
+   ----------------------------------------------------------- */
+.ligne-titre-cours {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ligne-titre-cours h1 {
+  margin: 0;
+}
+
+.actions-cours {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.bouton-terminer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon-petit);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-family: var(--police-corps);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--couleur-texte-doux);
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.bouton-terminer:hover:not(:disabled) {
+  color: var(--couleur-succes);
+  border-color: var(--couleur-succes);
+  background: #EAF3EC;
+}
+.bouton-terminer:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.bouton-terminer.actif {
+  background: #EAF3EC;
+  color: var(--couleur-succes);
+  border-color: var(--couleur-succes);
+}
+.bouton-terminer:focus-visible {
+  outline: 2px solid var(--couleur-accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .ligne-titre-cours {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .actions-cours {
+    align-self: flex-start;
+  }
+}
+
+/* -----------------------------------------------------------
+   Carte cours header — ligne matiere-tag + badge
+   ----------------------------------------------------------- */
+.carte-cours-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.carte-cours-header .matiere-tag {
+  margin-bottom: 0;
+}
+
+.carte-cours-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}

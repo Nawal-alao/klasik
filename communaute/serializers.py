@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import GroupeEtude, Message, Signalement, MessagePrive, MotInterdit
 from django.contrib.auth.models import User
+from pedagogie.models import Matiere
 
 
 class UserSimpleSerializer(serializers.ModelSerializer):
@@ -55,3 +56,13 @@ class SuiviSimpleSerializer(serializers.Serializer):
     eleve = serializers.CharField()
     mentor = serializers.CharField()
     matiere = serializers.CharField()
+
+
+class ProposerGroupeSerializer(serializers.Serializer):
+    nom = serializers.CharField(max_length=150)
+    matiere = serializers.PrimaryKeyRelatedField(queryset=Matiere.objects.all())
+
+    def validate_nom(self, value):
+        if GroupeEtude.objects.filter(nom__iexact=value.strip()).exists():
+            raise serializers.ValidationError("Un groupe avec ce nom existe déjà.")
+        return value.strip()

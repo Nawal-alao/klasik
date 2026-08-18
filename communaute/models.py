@@ -4,10 +4,21 @@ from pedagogie.models import ClasseScolaire, Serie
 
 
 class GroupeEtude(models.Model):
+	class StatutValidation(models.TextChoices):
+		EN_ATTENTE = "EN_ATTENTE", "En attente de validation"
+		VALIDE = "VALIDE", "Validé"
+		REJETE = "REJETE", "Rejeté"
+
 	nom = models.CharField(max_length=150)
 	classe_scolaire = models.CharField(max_length=10, choices=ClasseScolaire.choices)
 	serie = models.CharField(max_length=10, choices=Serie.choices, default=Serie.AUCUNE)
 	matiere = models.ForeignKey('pedagogie.Matiere', on_delete=models.CASCADE, related_name="groupes_etude")
+	statut_validation = models.CharField(
+		max_length=12, choices=StatutValidation.choices, default=StatutValidation.EN_ATTENTE
+	)
+	cree_par = models.ForeignKey(
+		User, on_delete=models.SET_NULL, null=True, blank=True, related_name="groupes_crees"
+	)
 
 	def __str__(self):
 		return self.nom

@@ -11,18 +11,21 @@ import string
 
 def _groupes_de_lutilisateur(user):
     """
-    Retourne les GroupeEtude pertinents pour l'utilisateur connecté,
+    Retourne les GroupeEtude validés pertinents pour l'utilisateur connecté,
     qu'il soit élève (filtré par classe/série) ou mentor (filtré par
-    les matières qu'il enseigne).
+    les matières qu'il enseigne). Exclut systématiquement les groupes
+    EN_ATTENTE et REJETÉ — seuls les admins Django les voient.
     """
+    base = GroupeEtude.objects.filter(statut_validation=GroupeEtude.StatutValidation.VALIDE)
+
     if hasattr(user, "profil_eleve"):
         eleve = user.profil_eleve
-        return GroupeEtude.objects.filter(
+        return base.filter(
             classe_scolaire=eleve.classe_scolaire,
             serie=eleve.serie,
         )
     elif hasattr(user, "profil_mentor"):
-        return GroupeEtude.objects.filter(matiere__in=user.profil_mentor.matieres.all())
+        return base.filter(matiere__in=user.profil_mentor.matieres.all())
     return GroupeEtude.objects.none()
  
  
