@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpen, Users, TrendingUp, MessageCircle } from 'lucide-react'
+import { BookOpen, Users, TrendingUp, MessageCircle, Shield, Lock, Award, Headphones, ArrowRight } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const fonctionnalites = [
@@ -24,6 +24,13 @@ const fonctionnalites = [
     titre: 'Communauté par série',
     description: 'Rejoins des groupes d\'étude avec des élèves de ta classe et ta série, pour apprendre ensemble, pas tout seul.',
   },
+]
+
+const confiance = [
+  { icon: Shield, titre: 'Contenu conforme', description: 'aux programmes officiels' },
+  { icon: Lock, titre: 'Données sécurisées', description: 'et confidentialité garantie' },
+  { icon: Award, titre: 'Conçu pour les élèves', description: 'du Bénin' },
+  { icon: Headphones, titre: 'Support réactif', description: 'et à ton écoute' },
 ]
 
 export default function Home() {
@@ -73,9 +80,24 @@ export default function Home() {
               </div>
               <h3>{f.titre}</h3>
               <p>{f.description}</p>
+              <div className="carte-fonctionnalite-fleche">
+                <ArrowRight size={16} strokeWidth={2} />
+              </div>
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="bande-confiance">
+        {confiance.map((c) => (
+          <div key={c.titre} className="confiance-item">
+            <c.icon size={24} strokeWidth={1.8} />
+            <div>
+              <p className="confiance-titre">{c.titre}</p>
+              <p className="confiance-desc">{c.description}</p>
+            </div>
+          </div>
+        ))}
       </section>
     </main>
   )
