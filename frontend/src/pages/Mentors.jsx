@@ -5,12 +5,36 @@ import { useAuth } from '../context/AuthContext'
 import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
 import AvatarInitiales from '../components/AvatarInitiales'
+import Squelette from '../components/Squelette'
+import ChargementFluide from '../components/ChargementFluide'
 
 function normaliser(str) {
   return (str || '')
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+}
+
+function SqueletteCarteMentor() {
+  return (
+    <div className="carte-mentor" style={{ pointerEvents: 'none' }}>
+      <div className="carte-mentor-haut">
+        <Squelette largeur={52} hauteur={52} arrondi="50%" />
+        <div style={{ flex: 1 }}>
+          <Squelette largeur="60%" hauteur={18} style={{ marginBottom: 6 }} />
+          <Squelette largeur={60} hauteur={14} />
+        </div>
+      </div>
+      <Squelette largeur="100%" hauteur={14} style={{ marginBottom: 8 }} />
+      <Squelette largeur="80%" hauteur={14} style={{ marginBottom: 14 }} />
+      <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+        <Squelette largeur={64} hauteur={22} arrondi="999px" />
+        <Squelette largeur={80} hauteur={22} arrondi="999px" />
+        <Squelette largeur={56} hauteur={22} arrondi="999px" />
+      </div>
+      <Squelette largeur="100%" hauteur={40} arrondi="var(--rayon-petit)" />
+    </div>
+  )
 }
 
 export default function Mentors() {
@@ -24,6 +48,7 @@ export default function Mentors() {
   const [suivreMessage, setSuivreMessage] = useState('')
   const [showAide, setShowAide] = useState(false)
   const [aideTexte, setAideTexte] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     api.get('pedagogie/matieres/').then(r => setMatieres(r.data))
@@ -32,7 +57,8 @@ export default function Mentors() {
 
   const loadMentors = (matiereId) => {
     const url = matiereId ? `comptes/mentors/?matiere=${matiereId}` : 'comptes/mentors/'
-    api.get(url).then(r => setMentors(r.data))
+    setLoading(true)
+    api.get(url).then(r => setMentors(r.data)).finally(() => setLoading(false))
   }
 
   const handleFilter = (e) => {
@@ -119,7 +145,15 @@ export default function Mentors() {
         </div>
       )}
 
-      {mentorsFiltres.length > 0 ? (
+      <ChargementFluide
+        isLoading={loading}
+        squelette={
+          <div className="grille-cartes">
+            {Array.from({ length: 6 }, (_, i) => <SqueletteCarteMentor key={i} />)}
+          </div>
+        }
+      >
+        {mentorsFiltres.length > 0 ? (
         <div className="grille-cartes">
           {mentorsFiltres.map(m => {
             const uneSeuleMatiere = m.matieres_detail?.length === 1
@@ -177,6 +211,7 @@ export default function Mentors() {
           </div>
         </div>
       )}
+      </ChargementFluide>
 
       <div className="carte-aide">
         <div className="carte-aide-icon">

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Search, MessageCircle } from 'lucide-react'
 import api from '../api/axios'
 import AvatarInitiales from '../components/AvatarInitiales'
+import Squelette from '../components/Squelette'
 
 function normaliser(str) {
   return (str || '')
@@ -28,12 +29,28 @@ function formaterDate(iso) {
   return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
 }
 
+function SqueletteConversation() {
+  return (
+    <div className="conversation-item" style={{ pointerEvents: 'none' }}>
+      <Squelette largeur={48} hauteur={48} arrondi="50%" />
+      <div className="conversation-corps">
+        <div className="conversation-tete">
+          <Squelette largeur={120} hauteur={16} />
+          <Squelette largeur={64} hauteur={20} arrondi="999px" />
+        </div>
+        <Squelette largeur="90%" hauteur={14} />
+      </div>
+    </div>
+  )
+}
+
 export default function Conversations() {
   const [suivis, setSuivis] = useState([])
   const [recherche, setRecherche] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get('communaute/conversations/').then(r => setSuivis(r.data))
+    api.get('communaute/conversations/').then(r => setSuivis(r.data)).finally(() => setLoading(false))
   }, [])
 
   const filtres = useMemo(() => {
@@ -62,7 +79,11 @@ export default function Conversations() {
         />
       </div>
 
-      {filtres.length > 0 ? (
+      {loading ? (
+        <div className="liste-conversations">
+          {Array.from({ length: 4 }, (_, i) => <SqueletteConversation key={i} />)}
+        </div>
+      ) : filtres.length > 0 ? (
         <div className="liste-conversations">
           {filtres.map(s => (
             <Link key={s.id} to={`/conversations/${s.id}`} className="conversation-item">

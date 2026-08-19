@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useNotification, ConteneurNotifications } from '../context/NotificationContext'
+import EntreePage from './EntreePage'
 
 const HAMBURGER = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -94,7 +95,9 @@ export default function Layout() {
 
       <ConteneurNotifications notifications={notifications} onRetirer={retirer} />
 
-      <Outlet />
+      <EntreePage key={location.pathname}>
+        <Outlet />
+      </EntreePage>
 
       <footer>
         <p>© {new Date().getFullYear()} Évoly — Plateforme éducative béninoise.</p>

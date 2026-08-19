@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
 import useCompteurAnime from '../hooks/useCompteurAnime'
+import Squelette from '../components/Squelette'
 
 const CLASSES_LABEL = {
   '6EME': 'Sixième', '5EME': 'Cinquième', '4EME': 'Quatrième',
@@ -71,15 +72,18 @@ export default function DashboardEleve() {
   const [suivis, setSuivis] = useState([])
   const [progressions, setProgressions] = useState([])
   const [abonnement, setAbonnement] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   const messageMotivant = useMemo(() =>
     MESSAGES_MOTIVANTS[Math.floor(Math.random() * MESSAGES_MOTIVANTS.length)], []
   )
 
   useEffect(() => {
-    api.get('comptes/mes-suivis/').then(r => setSuivis(r.data))
-    api.get('evaluations/progressions/').then(r => setProgressions(r.data))
-    api.get('abonnements/mon-abonnement/').then(r => setAbonnement(r.data.abonnement_actif))
+    Promise.all([
+      api.get('comptes/mes-suivis/').then(r => setSuivis(r.data)),
+      api.get('evaluations/progressions/').then(r => setProgressions(r.data)),
+      api.get('abonnements/mon-abonnement/').then(r => setAbonnement(r.data.abonnement_actif)),
+    ]).finally(() => setLoading(false))
   }, [])
 
   const noter = useCallback(async (suiviId, note) => {
@@ -115,7 +119,50 @@ export default function DashboardEleve() {
         </div>
       </div>
 
-      <div className="grille-stats">
+      {loading ? (
+        <>
+          <div className="grille-stats">
+            {Array.from({ length: 3 }, (_, i) => (
+              <div key={i} className="stat-carte">
+                <div className="stat-carte-haut">
+                  <Squelette largeur={42} hauteur={42} arrondi="50%" />
+                  <Squelette largeur={80} hauteur={32} />
+                </div>
+                <Squelette largeur="55%" hauteur={14} style={{ marginTop: 6 }} />
+                <Squelette largeur="80%" hauteur={12} style={{ marginTop: 4 }} />
+              </div>
+            ))}
+          </div>
+          <div className="section-titre"><h2>Mes mentors</h2></div>
+          <div className="carte" style={{ marginBottom: 40 }}>
+            {Array.from({ length: 3 }, (_, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: i < 2 ? '1px solid var(--couleur-bordure)' : 'none' }}>
+                <div>
+                  <Squelette largeur={140} hauteur={16} style={{ marginBottom: 4 }} />
+                  <Squelette largeur={100} hauteur={12} />
+                </div>
+                <Squelette largeur={80} hauteur={32} arrondi="var(--rayon-petit)" />
+              </div>
+            ))}
+          </div>
+          <div className="section-titre"><h2>Ma progression</h2></div>
+          <div className="carte" style={{ marginBottom: 40 }}>
+            {Array.from({ length: 3 }, (_, i) => (
+              <div key={i} className="ligne-progression">
+                <div style={{ flex: 1 }}>
+                  <Squelette largeur={120} hauteur={16} style={{ marginBottom: 8 }} />
+                  <div className="barre-progression-conteneur">
+                    <Squelette largeur="100%" hauteur={8} arrondi="999px" />
+                  </div>
+                </div>
+                <Squelette largeur={40} hauteur={20} />
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="grille-stats">
         <div className="stat-carte">
           <div className="stat-carte-haut">
             <div className="stat-carte-icon bleu">
@@ -211,6 +258,8 @@ export default function DashboardEleve() {
           </div>
         )}
       </div>
+        </>
+      )}
 
       <div className="raccourcis-dashboard">
         {raccourcis.map(r => (

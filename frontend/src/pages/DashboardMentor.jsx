@@ -3,13 +3,15 @@ import { Users, Activity, Star, GraduationCap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
 import useCompteurAnime from '../hooks/useCompteurAnime'
+import Squelette from '../components/Squelette'
 
 export default function DashboardMentor() {
   const { user } = useAuth()
   const [suivis, setSuivis] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get('comptes/suivis-mentor/').then(r => setSuivis(r.data))
+    api.get('comptes/suivis-mentor/').then(r => setSuivis(r.data)).finally(() => setLoading(false))
   }, [])
 
   if (!user) return null
@@ -28,7 +30,36 @@ export default function DashboardMentor() {
         <p className="texte-doux">{matieres}</p>
       </div>
 
-      <div className="grille-stats">
+      {loading ? (
+        <>
+          <div className="grille-stats">
+            {Array.from({ length: 3 }, (_, i) => (
+              <div key={i} className="stat-carte">
+                <div className="stat-carte-haut">
+                  <Squelette largeur={42} hauteur={42} arrondi="50%" />
+                  <Squelette largeur={80} hauteur={32} />
+                </div>
+                <Squelette largeur="55%" hauteur={14} style={{ marginTop: 6 }} />
+                <Squelette largeur="80%" hauteur={12} style={{ marginTop: 4 }} />
+              </div>
+            ))}
+          </div>
+          <div className="section-titre"><h2>Mes élèves</h2></div>
+          <div className="carte">
+            {Array.from({ length: 4 }, (_, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: i < 3 ? '1px solid var(--couleur-bordure)' : 'none' }}>
+                <div>
+                  <Squelette largeur={140} hauteur={16} style={{ marginBottom: 4 }} />
+                  <Squelette largeur={100} hauteur={12} />
+                </div>
+                <Squelette largeur={64} hauteur={24} arrondi="999px" />
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="grille-stats">
         <div className="stat-carte">
           <div className="stat-carte-haut">
             <div className="stat-carte-icon bleu">
@@ -91,6 +122,8 @@ export default function DashboardMentor() {
           </div>
         )}
       </div>
+        </>
+      )}
     </main>
   )
 }
