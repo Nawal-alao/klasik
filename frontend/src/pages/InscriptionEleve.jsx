@@ -86,7 +86,7 @@ export default function InscriptionEleve() {
   return (
     <main>
       <div className="conteneur-auth">
-        <p className="eyebrow">Rejoindre Klasik</p>
+        <p className="eyebrow">Rejoindre Évoly</p>
         <h1>Créer mon compte élève</h1>
         <p className="sous-titre">Quelques informations pour personnaliser tes cours dès le départ.</p>
 

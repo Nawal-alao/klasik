@@ -32,33 +32,32 @@ export default function Home() {
   return (
     <main className="page-accueil">
       <section className="hero">
-        <p className="eyebrow">Système éducatif béninois</p>
-        <h1>Des cours pensés pour ta classe, ta série, et toi.</h1>
-        <p className="sous-titre">
-          Klasik personnalise chaque cours selon ton niveau, te connecte à de vrais mentors,
-          et suit ta progression matière par matière.
-        </p>
-        <div className="hero-actions">
-          {user ? (
-            <Link
-              to={userType === 'mentor' ? '/dashboard/mentor' : '/dashboard/eleve'}
-              className="btn btn-primaire"
-            >
-              Aller à mon tableau de bord
-            </Link>
-          ) : (
-            <>
-              <Link to="/inscription/eleve" className="btn btn-primaire">Je suis élève</Link>
-              <Link to="/inscription/mentor" className="btn btn-secondaire">Je suis mentor</Link>
-            </>
-          )}
+        <div className="hero-texte">
+          <p className="eyebrow">Système éducatif béninois</p>
+          <h1>Des cours pensés pour ta classe, ta série, et toi.</h1>
+          <p className="sous-titre">
+            Évoly personnalise chaque cours selon ton niveau, te connecte à de vrais mentors,
+            et suit ta progression matière par matière.
+          </p>
+          <div className="hero-actions">
+            {user ? (
+              <Link
+                to={userType === 'mentor' ? '/dashboard/mentor' : '/dashboard/eleve'}
+                className="btn btn-primaire"
+              >
+                Aller à mon tableau de bord
+              </Link>
+            ) : (
+              <>
+                <Link to="/inscription/eleve" className="btn btn-primaire">Je suis élève</Link>
+                <Link to="/inscription/mentor" className="btn btn-secondaire">Je suis mentor</Link>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="hero-illustration">
-          <div className="hero-placeholder">
-            <BookOpen size={48} strokeWidth={1.2} />
-            <p>Image d'illustration à venir</p>
-          </div>
+          <img src="/school.png" alt="Élèves béninois en classe" className="hero-image" />
         </div>
       </section>
 
