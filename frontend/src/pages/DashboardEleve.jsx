@@ -1,19 +1,80 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Bookmark, Users, CreditCard, CalendarDays } from 'lucide-react'
+import { Bookmark, Users, CreditCard, CalendarDays, Trophy, BookOpen, FileText, MessageCircle, GraduationCap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
+import useCompteurAnime from '../hooks/useCompteurAnime'
 
 const CLASSES_LABEL = {
   '6EME': 'Sixième', '5EME': 'Cinquième', '4EME': 'Quatrième',
   '3EME': 'Troisième', '2ND': 'Seconde', '1ERE': 'Première', 'TLE': 'Terminale',
 }
 
+const MESSAGES_MOTIVANTS = [
+  'Chaque leçon te rapproche de ton objectif. Continue comme ça !',
+  'La régularité est la clé. Tu es sur la bonne voie.',
+  'Chaque examen passé est un pas de plus vers la réussite.',
+  'Ton investissement aujourd\'hui construit ton avenir demain.',
+  'Les résultats viennent avec le travail. Continue à fournir des efforts.',
+]
+
+const raccourcis = [
+  { to: '/cours', icon: BookOpen, label: 'Mes cours', desc: 'Reprends là où tu en étais' },
+  { to: '/examens', icon: FileText, label: 'Passer un examen', desc: 'Teste tes connaissances' },
+  { to: '/conversations', icon: MessageCircle, label: 'Messages', desc: 'Échange avec tes mentors' },
+  { to: '/communaute', icon: GraduationCap, label: 'Communauté', desc: 'Rejoins ton groupe d\'étude' },
+]
+
+function Etoiles({ note, noteCible, estActive, suiviId, onNoter }) {
+  const [etoileCliquee, setEtoileCliquee] = useState(null)
+  const [enCours, setEnCours] = useState(false)
+
+  const gererClic = useCallback(async (valeur) => {
+    if (enCours) return
+    setEtoileCliquee(valeur)
+    setEnCours(true)
+    try {
+      await onNoter(suiviId, valeur)
+    } finally {
+      setEnCours(false)
+      setTimeout(() => setEtoileCliquee(null), 250)
+    }
+  }, [enCours, suiviId, onNoter])
+
+  return (
+    <span className="notation-mentor" style={{ opacity: enCours ? 0.6 : 1, pointerEvents: enCours ? 'none' : 'auto' }}>
+      {[1, 2, 3, 4, 5].map(i => {
+        const remplie = etoileCliquee !== null
+          ? i <= etoileCliquee
+          : (noteCible !== null && i <= noteCible)
+        return (
+          <button
+            key={i}
+            type="button"
+            className={`etoile-noter${remplie ? ' remplie' : ''}${etoileCliquee === i ? ' etoile-pulse' : ''}`}
+            onClick={() => gererClic(i)}
+            disabled={enCours}
+            title={`Noter ${i}/5`}
+          >
+            ★
+          </button>
+        )
+      })}
+    </span>
+  )
+}
+
 export default function DashboardEleve() {
   const { user } = useAuth()
+  const { notifier } = useNotification()
   const [suivis, setSuivis] = useState([])
   const [progressions, setProgressions] = useState([])
   const [abonnement, setAbonnement] = useState(null)
+
+  const messageMotivant = useMemo(() =>
+    MESSAGES_MOTIVANTS[Math.floor(Math.random() * MESSAGES_MOTIVANTS.length)], []
+  )
 
   useEffect(() => {
     api.get('comptes/mes-suivis/').then(r => setSuivis(r.data))
@@ -21,22 +82,37 @@ export default function DashboardEleve() {
     api.get('abonnements/mon-abonnement/').then(r => setAbonnement(r.data.abonnement_actif))
   }, [])
 
-  const noter = (suiviId, note) => {
-    api.post(`comptes/suivis/${suiviId}/noter/`, { note }).then(r => {
+  const noter = useCallback(async (suiviId, note) => {
+    try {
+      await api.post(`comptes/suivis/${suiviId}/noter/`, { note })
       setSuivis(prev => prev.map(s => s.id === suiviId ? { ...s, note_evaluation: note } : s))
-    })
-  }
+      notifier('Note enregistrée', 'success')
+    } catch {
+      notifier('Erreur lors de l\'enregistrement de la note', 'error')
+    }
+  }, [notifier])
+
+  const mentorsAnime = useCompteurAnime(suivis.length)
+  const membresMois = useMemo(() => {
+    if (!user?.date_inscription) return null
+    return new Date(user.date_inscription).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })
+  }, [user?.date_inscription])
 
   if (!user) return null
   const classeLabel = CLASSES_LABEL[user.classe_scolaire] || user.classe_scolaire
-  const inscriptionDate = new Date(user.date_inscription).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })
 
   return (
     <main>
-      <div className="entete-page">
-        <p className="eyebrow">Tableau de bord</p>
-        <h1>Salut {user.prenom} 👋</h1>
-        <p className="texte-doux">{classeLabel}{user.serie !== 'AUCUNE' ? ` · Série ${user.serie}` : ''}</p>
+      <div className="entete-dashboard">
+        <div className="entete-dashboard-texte">
+          <p className="eyebrow">Tableau de bord</p>
+          <h1>Salut {user.prenom} 👋</h1>
+          <p className="texte-doux">{classeLabel}{user.serie !== 'AUCUNE' ? ` · Série ${user.serie}` : ''}</p>
+        </div>
+        <div className="encart-motivant">
+          <Trophy size={28} strokeWidth={1.5} />
+          <p>{messageMotivant}</p>
+        </div>
       </div>
 
       <div className="grille-stats">
@@ -45,9 +121,9 @@ export default function DashboardEleve() {
             <div className="stat-carte-icon bleu">
               <Users size={20} strokeWidth={2} />
             </div>
-            <div className="valeur">{suivis.length}</div>
+            <div className="valeur">{mentorsAnime}</div>
           </div>
-          <div className="label">Mentor{suivis.length > 1 ? 's' : ''} suivi{suivis.length > 1 ? 's' : ''}</div>
+          <div className="label">Mentor{mentorsAnime > 1 ? 's' : ''} suivi{mentorsAnime > 1 ? 's' : ''}</div>
           <p className="stat-carte-desc">Accompagnement personnalisé matière par matière</p>
         </div>
         <div className="stat-carte">
@@ -65,7 +141,7 @@ export default function DashboardEleve() {
             <div className="stat-carte-icon vert">
               <CalendarDays size={20} strokeWidth={2} />
             </div>
-            <div className="valeur">{inscriptionDate}</div>
+            <div className="valeur">{membresMois || '—'}</div>
           </div>
           <div className="label">Membre depuis</div>
           <p className="stat-carte-desc">Rejoins la communauté des élèves béninois</p>
@@ -86,14 +162,7 @@ export default function DashboardEleve() {
                   <span className="texte-doux"> — {s.matiere_nom}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <span className="notation-mentor">
-                    {[1,2,3,4,5].map(i => (
-                      <button key={i} type="button"
-                        className={s.note_evaluation && i <= s.note_evaluation ? 'remplie' : ''}
-                        onClick={() => noter(s.id, i)}
-                        title={`Noter ${i}/5`}>★</button>
-                    ))}
-                  </span>
+                  <Etoiles note={s.note_evaluation} noteCible={s.note_evaluation} estActive suiviId={s.id} onNoter={noter} />
                   <Link to={`/conversations/${s.id}`} className="btn btn-secondaire">Écrire</Link>
                 </div>
               </li>
@@ -131,10 +200,30 @@ export default function DashboardEleve() {
           ))
         ) : (
           <div className="etat-vide">
-            <p>Tu n'as pas encore de progression enregistrée. Passe ton premier examen pour commencer à suivre ton évolution.</p>
+            <div className="etat-vide-icone">
+              <GraduationCap size={40} strokeWidth={1.2} />
+            </div>
+            <p>Tu n'as pas encore de progression enregistrée.</p>
+            <p className="texte-doux" style={{ fontSize: '0.9rem', marginTop: -12 }}>
+              Passe ton premier examen pour commencer à suivre ton évolution.
+            </p>
             <Link to="/examens" className="btn btn-primaire">Voir les examens disponibles</Link>
           </div>
         )}
+      </div>
+
+      <div className="raccourcis-dashboard">
+        {raccourcis.map(r => (
+          <Link key={r.to} to={r.to} className="raccourci-carte">
+            <div className="raccourci-icon">
+              <r.icon size={22} strokeWidth={1.8} />
+            </div>
+            <div>
+              <p className="raccourci-label">{r.label}</p>
+              <p className="raccourci-desc">{r.desc}</p>
+            </div>
+          </Link>
+        ))}
       </div>
 
       <div className="section-titre"><h2>Mon abonnement</h2></div>

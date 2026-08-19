@@ -47,8 +47,8 @@ class MessagePriveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MessagePrive
-        fields = ['id', 'suivi', 'auteur', 'contenu', 'date_envoi', 'statut']
-        read_only_fields = ['id', 'auteur', 'date_envoi', 'statut']
+        fields = ['id', 'suivi', 'auteur', 'contenu', 'date_envoi', 'statut', 'lu']
+        read_only_fields = ['id', 'auteur', 'date_envoi', 'statut', 'lu']
 
 
 class SuiviSimpleSerializer(serializers.Serializer):

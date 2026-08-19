@@ -46,7 +46,7 @@ export default function Communaute() {
       setShowForm(false)
     }).catch(err => {
       const msg = err.response?.data?.detail || err.response?.data?.nom?.[0] || 'Erreur lors de la proposition.'
-      notifier(msg, 'erreur')
+      notifier(msg, 'error')
     }).finally(() => setSubmitting(false))
   }
 

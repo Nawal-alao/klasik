@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
 
 const FORMULES = { MENSUEL: 'Mensuel', ANNUEL: 'Annuel' }
 const STATUTS = { ACTIF: 'Actif', EXPIRE: 'Expiré', ANNULE: 'Annulé' }
 
 export default function Abonnement() {
+  const { notifier } = useNotification()
   const [abonnement, setAbonnement] = useState(null)
   const [historique, setHistorique] = useState([])
   const [showDialog, setShowDialog] = useState(false)
@@ -23,6 +25,9 @@ export default function Abonnement() {
     api.post('abonnements/annuler/').then(() => {
       setAbonnement(null)
       setShowDialog(false)
+      notifier("Ton abonnement a été annulé.", 'success')
+    }).catch(() => {
+      notifier("Une erreur est survenue, réessaie dans un instant.", 'error')
     }).finally(() => setAnnulant(false))
   }
 

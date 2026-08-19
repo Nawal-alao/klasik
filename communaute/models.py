@@ -79,6 +79,7 @@ class MessagePrive(models.Model):
     contenu = models.TextField()
     date_envoi = models.DateTimeField(auto_now_add=True)
     statut = models.CharField(max_length=10, choices=Statut.choices, default=Statut.VISIBLE)
+    lu = models.BooleanField(default=False, help_text="Lu par le destinataire.")
  
     class Meta:
         ordering = ["date_envoi"]

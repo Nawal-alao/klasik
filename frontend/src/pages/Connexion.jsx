@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 
 export default function Connexion() {
   const { login, user } = useAuth()
+  const { notifier } = useNotification()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [erreur, setErreur] = useState('')
@@ -19,15 +21,22 @@ export default function Connexion() {
     setErreur('')
     setSending(true)
     try {
-      await login(username, password)
+      const profil = await login(username, password)
+      if (profil) {
+        notifier(`Content de te revoir, ${profil.prenom} !`, 'success')
+      }
     } catch (err) {
       const data = err.response?.data
       if (data?.detail) {
         setErreur(data.detail)
+        notifier(data.detail, 'error')
       } else if (data?.non_field_errors) {
-        setErreur(Array.isArray(data.non_field_errors) ? data.non_field_errors.join(' ') : data.non_field_errors)
+        const msg = Array.isArray(data.non_field_errors) ? data.non_field_errors.join(' ') : data.non_field_errors
+        setErreur(msg)
+        notifier(msg, 'error')
       } else {
         setErreur("Identifiants incorrects. Réessaie.")
+        notifier("Nom d'utilisateur ou mot de passe incorrect.", 'error')
       }
     } finally {
       setSending(false)

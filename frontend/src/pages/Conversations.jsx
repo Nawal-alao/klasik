@@ -1,13 +1,48 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { Search, MessageCircle } from 'lucide-react'
 import api from '../api/axios'
+import AvatarInitiales from '../components/AvatarInitiales'
+
+function normaliser(str) {
+  return (str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
+function formaterDate(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  const now = new Date()
+  const auj = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const hier = new Date(auj); hier.setDate(hier.getDate() - 1)
+  const msgDate = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+
+  if (msgDate.getTime() === auj.getTime()) {
+    return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  }
+  if (msgDate.getTime() === hier.getTime()) {
+    return 'Hier'
+  }
+  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+}
 
 export default function Conversations() {
   const [suivis, setSuivis] = useState([])
+  const [recherche, setRecherche] = useState('')
 
   useEffect(() => {
     api.get('communaute/conversations/').then(r => setSuivis(r.data))
   }, [])
+
+  const filtres = useMemo(() => {
+    const q = normaliser(recherche)
+    if (!q) return suivis
+    return suivis.filter(s =>
+      normaliser(s.interlocuteur).includes(q) || normaliser(s.matiere).includes(q)
+    )
+  }, [suivis, recherche])
 
   return (
     <main>
@@ -17,26 +52,51 @@ export default function Conversations() {
         <p className="texte-doux">Échanges privés avec tes mentors, matière par matière.</p>
       </div>
 
-      {suivis.length > 0 ? (
-        <div className="carte">
-          <ul className="liste-simple">
-            {suivis.map(s => (
-              <li key={s.id}>
-                <Link to={`/conversations/${s.id}`} style={{ flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-                  <div>
-                    <strong>{s.mentor}</strong>
-                    <span className="texte-doux"> — {s.matiere}</span>
-                  </div>
-                  <span className="badge badge-actif">Actif</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+      <div className="barre-recherche" style={{ marginBottom: 24 }}>
+        <Search size={16} strokeWidth={2} className="barre-recherche-icone" />
+        <input
+          type="text"
+          placeholder="Rechercher une conversation…"
+          value={recherche}
+          onChange={e => setRecherche(e.target.value)}
+        />
+      </div>
+
+      {filtres.length > 0 ? (
+        <div className="liste-conversations">
+          {filtres.map(s => (
+            <Link key={s.id} to={`/conversations/${s.id}`} className="conversation-item">
+              <AvatarInitiales prenom={s.interlocuteur_prenom} nom={s.interlocuteur?.split(' ').slice(1).join(' ')} taille={48} />
+              <div className="conversation-corps">
+                <div className="conversation-tete">
+                  <span className="conversation-nom">{s.interlocuteur}</span>
+                  <span className="matiere-tag">{s.matiere}</span>
+                </div>
+                <div className="conversation-apercu">
+                  <p className="conversation-dernier-msg">
+                    {s.dernier_message || 'Aucun message pour le moment.'}
+                  </p>
+                  {s.dernier_message_date && (
+                    <span className="conversation-date">{formaterDate(s.dernier_message_date)}</span>
+                  )}
+                </div>
+              </div>
+              {s.messages_non_lus > 0 && (
+                <span className="badge-non-lus">{s.messages_non_lus}</span>
+              )}
+            </Link>
+          ))}
         </div>
       ) : (
         <div className="carte">
           <div className="etat-vide">
-            <p>Aucune conversation pour le moment.</p>
+            <div className="etat-vide-icone">
+              <MessageCircle size={40} strokeWidth={1.2} />
+            </div>
+            <p>Tes conversations apparaîtront ici.</p>
+            <p className="texte-doux" style={{ fontSize: '0.9rem', marginTop: -12 }}>
+              Commence à échanger avec tes mentors pour voir tes discussions ici.
+            </p>
           </div>
         </div>
       )}

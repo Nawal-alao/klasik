@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { User, UserCircle, Calendar, BookOpen, FileText } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
 
 const CLASSES = [
@@ -17,6 +18,7 @@ const SERIES = [
 
 export default function Profil() {
   const { user, userType } = useAuth()
+  const { notifier } = useNotification()
   const [form, setForm] = useState({})
   const [erreurs, setErreurs] = useState({})
   const [sending, setSending] = useState(false)
@@ -44,6 +46,7 @@ export default function Profil() {
     api.patch('comptes/mon-profil/', payload).then(() => {
       setSaved(true)
       setErreurs({})
+      notifier('Ton profil a été mis à jour.', 'success')
     }).catch(err => {
       const data = err.response?.data
       const fieldErrors = {}
@@ -51,6 +54,8 @@ export default function Profil() {
         fieldErrors[k] = Array.isArray(v) ? v.join(' ') : String(v)
       }
       setErreurs(fieldErrors)
+      const detail = data?.detail || Object.values(fieldErrors).join('. ')
+      notifier(detail || 'Une erreur est survenue, réessaie dans un instant.', 'error')
     }).finally(() => setSending(false))
   }
 

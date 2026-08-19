@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { useNotification } from '../context/NotificationContext'
+import { useNotification, ConteneurNotifications } from '../context/NotificationContext'
 
 const HAMBURGER = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -13,7 +13,7 @@ const HAMBURGER = (
 
 export default function Layout() {
   const { user, userType, loading, logout } = useAuth()
-  const { notifications, retirer } = useNotification()
+  const { notifications, notifier, retirer } = useNotification()
   const navigate = useNavigate()
   const location = useLocation()
   const [menuOuvert, setMenuOuvert] = useState(false)
@@ -24,6 +24,7 @@ export default function Layout() {
 
   const handleLogout = () => {
     logout()
+    notifier("Tu es déconnecté. À bientôt !", 'info')
     navigate('/')
   }
 
@@ -91,15 +92,7 @@ export default function Layout() {
         </div>
       </header>
 
-      {notifications.length > 0 && (
-        <ul className="messages">
-          {notifications.map(n => (
-            <li key={n.id} className={`alerte alerte-${n.type}`} onClick={() => retirer(n.id)}>
-              {n.texte}
-            </li>
-          ))}
-        </ul>
-      )}
+      <ConteneurNotifications notifications={notifications} onRetirer={retirer} />
 
       <Outlet />
 

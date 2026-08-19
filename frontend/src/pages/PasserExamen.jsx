@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import DOMPurify from 'dompurify'
+import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
 
 export default function PasserExamen() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { notifier } = useNotification()
   const [examen, setExamen] = useState(null)
   const [questions, setQuestions] = useState([])
   const [reponses, setReponses] = useState({})
@@ -32,8 +34,12 @@ export default function PasserExamen() {
       })),
     }
     api.post(`evaluations/examens/${id}/soumettre/`, payload).then(r => {
+      notifier('Examen soumis avec succès !', 'success')
       navigate(`/resultats/${r.data.id}`)
-    }).catch(() => setSending(false))
+    }).catch(() => {
+      setSending(false)
+      notifier("L'envoi de tes réponses a échoué, réessaie.", 'error')
+    })
   }
 
   if (!examen) return <main><div className="etat-vide"><p>Chargement…</p></div></main>

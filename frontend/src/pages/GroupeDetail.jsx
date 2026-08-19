@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
 
 export default function GroupeDetail() {
   const { id } = useParams()
   const { user } = useAuth()
+  const { notifier } = useNotification()
   const [groupe, setGroupe] = useState(null)
   const [messages, setMessages] = useState([])
   const [contenu, setContenu] = useState('')
@@ -33,13 +35,27 @@ export default function GroupeDetail() {
     api.post(`communaute/groupes/${id}/envoyer/`, { contenu }).then(r => {
       setMessages(prev => [...prev, r.data])
       setContenu('')
+    }).catch(() => {
+      notifier('Une erreur est survenue, réessaie dans un instant.', 'error')
     }).finally(() => setSending(false))
   }
 
   const handleSignal = (e) => {
     e.preventDefault()
     api.post(`communaute/messages/${signalMsg.messageId}/signaler/`, { motif: signalMsg.motif })
-      .then(() => setSignalMsg({ open: false, messageId: null, motif: '' }))
+      .then(() => {
+        setSignalMsg({ open: false, messageId: null, motif: '' })
+        notifier('Ton signalement a bien été enregistré.', 'success')
+      })
+      .catch(err => {
+        const detail = err.response?.data?.detail
+        if (detail && detail.includes('déjà')) {
+          notifier('Tu as déjà signalé ce message.', 'info')
+        } else {
+          notifier(detail || 'Une erreur est survenue, réessaie dans un instant.', 'error')
+        }
+        setSignalMsg({ open: false, messageId: null, motif: '' })
+      })
   }
 
   if (!groupe) return <main><div className="etat-vide"><p>Chargement…</p></div></main>

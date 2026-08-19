@@ -43,6 +43,7 @@ export function AuthProvider({ children }) {
       const isEleve = profil.classe_scolaire !== undefined
       navigate(isEleve ? '/dashboard/eleve' : '/dashboard/mentor')
     }
+    return profil
   }
 
   const logout = () => {
@@ -54,13 +55,14 @@ export function AuthProvider({ children }) {
 
   const inscriptionEleve = async (payload) => {
     await api.post('comptes/inscription/eleve/', payload)
-    // Inscription succeeded → redirect to login (same as Django's success_url)
     navigate('/connexion')
+    return payload.prenom
   }
 
   const inscriptionMentor = async (payload) => {
     await api.post('comptes/inscription/mentor/', payload)
     navigate('/connexion')
+    return payload.prenom
   }
 
   return (

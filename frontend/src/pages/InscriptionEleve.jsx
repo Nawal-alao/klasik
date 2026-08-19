@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 
 const CLASSES = [
   { value: '6EME', label: 'Sixième' },
@@ -28,6 +29,7 @@ function FieldErrors({ errors }) {
 
 export default function InscriptionEleve() {
   const { inscriptionEleve, user } = useAuth()
+  const { notifier } = useNotification()
 
   const [form, setForm] = useState({
     prenom: '', nom: '', age: '',
@@ -54,17 +56,18 @@ export default function InscriptionEleve() {
     setNonFieldError('')
     setSending(true)
     try {
-      await inscriptionEleve({
+      const prenom = await inscriptionEleve({
         ...form,
         age: Number(form.age),
       })
+      notifier(`Bienvenue sur Évoly, ${prenom} ! Ton compte a été créé.`, 'success')
     } catch (err) {
       const data = err.response?.data
       if (data) {
         if (data.non_field_errors) {
-          setNonFieldError(
-            Array.isArray(data.non_field_errors) ? data.non_field_errors.join(' ') : data.non_field_errors
-          )
+          const msg = Array.isArray(data.non_field_errors) ? data.non_field_errors.join(' ') : data.non_field_errors
+          setNonFieldError(msg)
+          notifier(msg, 'error')
         }
         const fieldErrors = {}
         for (const [key, val] of Object.entries(data)) {
@@ -74,9 +77,11 @@ export default function InscriptionEleve() {
         setErreurs(fieldErrors)
         if (Object.keys(fieldErrors).length === 0 && !data.detail) {
           setNonFieldError("Une erreur est survenue. Vérifie les champs.")
+          notifier("Une erreur est survenue, réessaie dans un instant.", 'error')
         }
       } else {
         setNonFieldError("Impossible de contacter le serveur. Réessaie.")
+        notifier("Une erreur est survenue, réessaie dans un instant.", 'error')
       }
     } finally {
       setSending(false)

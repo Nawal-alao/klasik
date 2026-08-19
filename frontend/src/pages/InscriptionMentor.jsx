@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
 
 function FieldErrors({ errors }) {
@@ -11,6 +12,7 @@ function FieldErrors({ errors }) {
 
 export default function InscriptionMentor() {
   const { inscriptionMentor, user } = useAuth()
+  const { notifier } = useNotification()
 
   const [form, setForm] = useState({
     prenom: '', nom: '', bio: '',
@@ -51,14 +53,15 @@ export default function InscriptionMentor() {
     setNonFieldError('')
     setSending(true)
     try {
-      await inscriptionMentor({ ...form, matieres: matieresIds })
+      const prenom = await inscriptionMentor({ ...form, matieres: matieresIds })
+      notifier(`Bienvenue sur Évoly, ${prenom} ! Ton profil mentor est prêt.`, 'success')
     } catch (err) {
       const data = err.response?.data
       if (data) {
         if (data.non_field_errors) {
-          setNonFieldError(
-            Array.isArray(data.non_field_errors) ? data.non_field_errors.join(' ') : data.non_field_errors
-          )
+          const msg = Array.isArray(data.non_field_errors) ? data.non_field_errors.join(' ') : data.non_field_errors
+          setNonFieldError(msg)
+          notifier(msg, 'error')
         }
         const fieldErrors = {}
         for (const [key, val] of Object.entries(data)) {
@@ -68,9 +71,11 @@ export default function InscriptionMentor() {
         setErreurs(fieldErrors)
         if (Object.keys(fieldErrors).length === 0 && !data.detail) {
           setNonFieldError("Une erreur est survenue. Vérifie les champs.")
+          notifier("Une erreur est survenue, réessaie dans un instant.", 'error')
         }
       } else {
         setNonFieldError("Impossible de contacter le serveur. Réessaie.")
+        notifier("Une erreur est survenue, réessaie dans un instant.", 'error')
       }
     } finally {
       setSending(false)

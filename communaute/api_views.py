@@ -88,14 +88,30 @@ class ConversationsListAPIView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         suivis = _suivis_de_lutilisateur(request.user).select_related('eleve', 'mentor', 'matiere')
-        # Simple representation
         data = []
         for s in suivis:
+            dernier_msg = s.messages_prives.filter(statut=MessagePrive.Statut.VISIBLE).order_by('-date_envoi').first()
+            non_lus = s.messages_prives.filter(
+                statut=MessagePrive.Statut.VISIBLE,
+                lu=False,
+            ).exclude(auteur=request.user).count()
+
+            # Determine the other participant's name
+            if hasattr(request.user, 'profil_eleve'):
+                interlocuteur = f"{s.mentor.prenom} {s.mentor.nom}"
+                interlocuteur_prenom = s.mentor.prenom
+            else:
+                interlocuteur = f"{s.eleve.prenom} {s.eleve.nom}"
+                interlocuteur_prenom = s.eleve.prenom
+
             data.append({
                 'id': s.id,
-                'eleve': f"{s.eleve.prenom} {s.eleve.nom}",
-                'mentor': f"{s.mentor.prenom} {s.mentor.nom}",
+                'interlocuteur': interlocuteur,
+                'interlocuteur_prenom': interlocuteur_prenom,
                 'matiere': s.matiere.nom,
+                'dernier_message': dernier_msg.contenu if dernier_msg else None,
+                'dernier_message_date': dernier_msg.date_envoi.isoformat() if dernier_msg else None,
+                'messages_non_lus': non_lus,
             })
         return Response(data)
 
@@ -106,8 +122,35 @@ class ConversationDetailAPIView(APIView):
     def get(self, request, pk):
         suivi = get_object_or_404(_suivis_de_lutilisateur(request.user), pk=pk)
         messages = suivi.messages_prives.filter(statut=MessagePrive.Statut.VISIBLE).select_related('auteur')
+
+        # Determine the other participant
+        if hasattr(request.user, 'profil_eleve'):
+            interlocuteur = f"{suivi.mentor.prenom} {suivi.mentor.nom}"
+            interlocuteur_prenom = suivi.mentor.prenom
+            sous_texte = f"Mentor en {suivi.matiere.nom}"
+        else:
+            interlocuteur = f"{suivi.eleve.prenom} {suivi.eleve.nom}"
+            interlocuteur_prenom = suivi.eleve.prenom
+            sous_texte = f"{suivi.eleve.get_classe_scolaire_display()} · Série {suivi.eleve.serie}"
+
         serializer = MessagePriveSerializer(messages, many=True)
-        return Response({'suivi_id': suivi.id, 'messages': serializer.data})
+        return Response({
+            'suivi_id': suivi.id,
+            'interlocuteur': interlocuteur,
+            'interlocuteur_prenom': interlocuteur_prenom,
+            'matiere': suivi.matiere.nom,
+            'sous_texte': sous_texte,
+            'messages': serializer.data,
+        })
+
+    def post(self, request, pk):
+        """Mark all messages from the other participant as read."""
+        suivi = get_object_or_404(_suivis_de_lutilisateur(request.user), pk=pk)
+        suivi.messages_prives.filter(
+            statut=MessagePrive.Statut.VISIBLE,
+            lu=False,
+        ).exclude(auteur=request.user).update(lu=True)
+        return Response({'detail': 'Messages marqués comme lus.'})
 
 
 class EnvoyerMessagePriveAPIView(APIView):

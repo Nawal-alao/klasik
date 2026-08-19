@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Users, Activity, Star, GraduationCap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
+import useCompteurAnime from '../hooks/useCompteurAnime'
 
 export default function DashboardMentor() {
   const { user } = useAuth()
@@ -15,6 +16,9 @@ export default function DashboardMentor() {
   const matieres = user.matieres_detail?.map(m => m.nom).join(' · ') || ''
   const elevesUniques = [...new Map(suivis.map(s => [s.eleve, s])).values()]
   const actifs = suivis.filter(s => s.actif)
+
+  const elevesAnime = useCompteurAnime(elevesUniques.length)
+  const actifsAnime = useCompteurAnime(actifs.length)
 
   return (
     <main>
@@ -30,7 +34,7 @@ export default function DashboardMentor() {
             <div className="stat-carte-icon bleu">
               <Users size={20} strokeWidth={2} />
             </div>
-            <div className="valeur">{elevesUniques.length}</div>
+            <div className="valeur">{elevesAnime}</div>
           </div>
           <div className="label">Élève{elevesUniques.length > 1 ? 's' : ''} suivi{elevesUniques.length > 1 ? 's' : ''}</div>
           <p className="stat-carte-desc">Total d'élèves inscrits sous ton encadrement</p>
@@ -41,7 +45,7 @@ export default function DashboardMentor() {
             <div className="stat-carte-icon vert">
               <Activity size={20} strokeWidth={2} />
             </div>
-            <div className="valeur">{actifs.length}</div>
+            <div className="valeur">{actifsAnime}</div>
           </div>
           <div className="label">Suivi{actifs.length > 1 ? 's' : ''} actif{actifs.length > 1 ? 's' : ''}</div>
           <p className="stat-carte-desc">Élèves avec qui tu échanges en ce moment</p>
