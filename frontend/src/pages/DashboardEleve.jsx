@@ -6,6 +6,7 @@ import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
 import useCompteurAnime from '../hooks/useCompteurAnime'
 import Squelette from '../components/Squelette'
+import ChargementFluide from '../components/ChargementFluide'
 
 const CLASSES_LABEL = {
   '6EME': 'Sixième', '5EME': 'Cinquième', '4EME': 'Quatrième',
@@ -119,147 +120,148 @@ export default function DashboardEleve() {
         </div>
       </div>
 
-      {loading ? (
-        <>
-          <div className="grille-stats">
-            {Array.from({ length: 3 }, (_, i) => (
-              <div key={i} className="stat-carte">
-                <div className="stat-carte-haut">
-                  <Squelette largeur={42} hauteur={42} arrondi="50%" />
-                  <Squelette largeur={80} hauteur={32} />
+      <ChargementFluide
+        isLoading={loading}
+        squelette={
+          <>
+            <div className="grille-stats">
+              {Array.from({ length: 3 }, (_, i) => (
+                <div key={i} className="stat-carte">
+                  <div className="stat-carte-haut">
+                    <Squelette largeur={42} hauteur={42} arrondi="50%" />
+                    <Squelette largeur={80} hauteur={32} />
+                  </div>
+                  <Squelette largeur="55%" hauteur={14} style={{ marginTop: 6 }} />
+                  <Squelette largeur="80%" hauteur={12} style={{ marginTop: 4 }} />
                 </div>
-                <Squelette largeur="55%" hauteur={14} style={{ marginTop: 6 }} />
-                <Squelette largeur="80%" hauteur={12} style={{ marginTop: 4 }} />
-              </div>
-            ))}
-          </div>
-          <div className="section-titre"><h2>Mes mentors</h2></div>
-          <div className="carte" style={{ marginBottom: 40 }}>
-            {Array.from({ length: 3 }, (_, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: i < 2 ? '1px solid var(--couleur-bordure)' : 'none' }}>
-                <div>
-                  <Squelette largeur={140} hauteur={16} style={{ marginBottom: 4 }} />
-                  <Squelette largeur={100} hauteur={12} />
+              ))}
+            </div>
+            <div className="section-titre"><h2>Mes mentors</h2></div>
+            <div className="carte" style={{ marginBottom: 40 }}>
+              {Array.from({ length: 3 }, (_, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: i < 2 ? '1px solid var(--couleur-bordure)' : 'none' }}>
+                  <div>
+                    <Squelette largeur={140} hauteur={16} style={{ marginBottom: 4 }} />
+                    <Squelette largeur={100} hauteur={12} />
+                  </div>
+                  <Squelette largeur={80} hauteur={32} arrondi="var(--rayon-petit)" />
                 </div>
-                <Squelette largeur={80} hauteur={32} arrondi="var(--rayon-petit)" />
+              ))}
+            </div>
+            <div className="section-titre"><h2>Ma progression</h2></div>
+            <div className="carte" style={{ marginBottom: 40 }}>
+              {Array.from({ length: 3 }, (_, i) => (
+                <div key={i} className="ligne-progression">
+                  <div style={{ flex: 1 }}>
+                    <Squelette largeur={120} hauteur={16} style={{ marginBottom: 8 }} />
+                    <div className="barre-progression-conteneur">
+                      <Squelette largeur="100%" hauteur={8} arrondi="999px" />
+                    </div>
+                  </div>
+                  <Squelette largeur={40} hauteur={20} />
+                </div>
+              ))}
+            </div>
+          </>
+        }
+      >
+        <div className="grille-stats">
+          <div className="stat-carte">
+            <div className="stat-carte-haut">
+              <div className="stat-carte-icon bleu">
+                <Users size={20} strokeWidth={2} />
               </div>
-            ))}
+              <div className="valeur">{mentorsAnime}</div>
+            </div>
+            <div className="label">Mentor{mentorsAnime > 1 ? 's' : ''} suivi{mentorsAnime > 1 ? 's' : ''}</div>
+            <p className="stat-carte-desc">Accompagnement personnalisé matière par matière</p>
           </div>
-          <div className="section-titre"><h2>Ma progression</h2></div>
-          <div className="carte" style={{ marginBottom: 40 }}>
-            {Array.from({ length: 3 }, (_, i) => (
-              <div key={i} className="ligne-progression">
+          <div className="stat-carte">
+            <div className="stat-carte-haut">
+              <div className="stat-carte-icon accent">
+                <CreditCard size={20} strokeWidth={2} />
+              </div>
+              <div className="valeur">{abonnement ? 'Actif' : 'Inactif'}</div>
+            </div>
+            <div className="label">Statut de l'abonnement</div>
+            <p className="stat-carte-desc">{abonnement ? `Formule ${abonnement.formule}` : 'Souscris pour débloquer les mentors'}</p>
+          </div>
+          <div className="stat-carte">
+            <div className="stat-carte-haut">
+              <div className="stat-carte-icon vert">
+                <CalendarDays size={20} strokeWidth={2} />
+              </div>
+              <div className="valeur">{membresMois || '—'}</div>
+            </div>
+            <div className="label">Membre depuis</div>
+            <p className="stat-carte-desc">Rejoins la communauté des élèves béninois</p>
+          </div>
+        </div>
+
+        <div className="section-titre">
+          <h2>Mes mentors</h2>
+          <Link to="/mentors">Trouver un mentor →</Link>
+        </div>
+        <div className="carte" style={{ marginBottom: 40 }}>
+          {suivis.length > 0 ? (
+            <ul className="liste-simple">
+              {suivis.map(s => (
+                <li key={s.id}>
+                  <div>
+                    <strong>{s.mentor_name}</strong>
+                    <span className="texte-doux"> — {s.matiere_nom}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <Etoiles note={s.note_evaluation} noteCible={s.note_evaluation} estActive suiviId={s.id} onNoter={noter} />
+                    <Link to={`/conversations/${s.id}`} className="btn btn-secondaire">Écrire</Link>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="etat-vide">
+              <p>Tu ne suis encore aucun mentor.</p>
+              <Link to="/mentors" className="btn btn-primaire">Trouver un mentor</Link>
+            </div>
+          )}
+        </div>
+
+        <div className="section-titre">
+          <h2>Ma progression</h2>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <Link to="/cours/favoris" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <Bookmark size={14} /> Favoris
+            </Link>
+            <Link to="/cours">Voir tous les cours →</Link>
+          </div>
+        </div>
+        <div className="carte" style={{ marginBottom: 40 }}>
+          {progressions.length > 0 ? (
+            progressions.map(p => (
+              <div key={p.id} className="ligne-progression">
                 <div style={{ flex: 1 }}>
-                  <Squelette largeur={120} hauteur={16} style={{ marginBottom: 8 }} />
+                  <div className="matiere-nom">{p.matiere_nom}</div>
                   <div className="barre-progression-conteneur">
-                    <Squelette largeur="100%" hauteur={8} arrondi="999px" />
+                    <div className="barre-progression" style={{ width: `${p.niveau_maitrise}%` }} />
                   </div>
                 </div>
-                <Squelette largeur={40} hauteur={20} />
+                <div className="pourcentage">{Math.round(p.niveau_maitrise)}%</div>
               </div>
-            ))}
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="grille-stats">
-        <div className="stat-carte">
-          <div className="stat-carte-haut">
-            <div className="stat-carte-icon bleu">
-              <Users size={20} strokeWidth={2} />
-            </div>
-            <div className="valeur">{mentorsAnime}</div>
-          </div>
-          <div className="label">Mentor{mentorsAnime > 1 ? 's' : ''} suivi{mentorsAnime > 1 ? 's' : ''}</div>
-          <p className="stat-carte-desc">Accompagnement personnalisé matière par matière</p>
-        </div>
-        <div className="stat-carte">
-          <div className="stat-carte-haut">
-            <div className="stat-carte-icon accent">
-              <CreditCard size={20} strokeWidth={2} />
-            </div>
-            <div className="valeur">{abonnement ? 'Actif' : 'Inactif'}</div>
-          </div>
-          <div className="label">Statut de l'abonnement</div>
-          <p className="stat-carte-desc">{abonnement ? `Formule ${abonnement.formule}` : 'Souscris pour débloquer les mentors'}</p>
-        </div>
-        <div className="stat-carte">
-          <div className="stat-carte-haut">
-            <div className="stat-carte-icon vert">
-              <CalendarDays size={20} strokeWidth={2} />
-            </div>
-            <div className="valeur">{membresMois || '—'}</div>
-          </div>
-          <div className="label">Membre depuis</div>
-          <p className="stat-carte-desc">Rejoins la communauté des élèves béninois</p>
-        </div>
-      </div>
-
-      <div className="section-titre">
-        <h2>Mes mentors</h2>
-        <Link to="/mentors">Trouver un mentor →</Link>
-      </div>
-      <div className="carte" style={{ marginBottom: 40 }}>
-        {suivis.length > 0 ? (
-          <ul className="liste-simple">
-            {suivis.map(s => (
-              <li key={s.id}>
-                <div>
-                  <strong>{s.mentor_name}</strong>
-                  <span className="texte-doux"> — {s.matiere_nom}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <Etoiles note={s.note_evaluation} noteCible={s.note_evaluation} estActive suiviId={s.id} onNoter={noter} />
-                  <Link to={`/conversations/${s.id}`} className="btn btn-secondaire">Écrire</Link>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="etat-vide">
-            <p>Tu ne suis encore aucun mentor.</p>
-            <Link to="/mentors" className="btn btn-primaire">Trouver un mentor</Link>
-          </div>
-        )}
-      </div>
-
-      <div className="section-titre">
-        <h2>Ma progression</h2>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Link to="/cours/favoris" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            <Bookmark size={14} /> Favoris
-          </Link>
-          <Link to="/cours">Voir tous les cours →</Link>
-        </div>
-      </div>
-      <div className="carte" style={{ marginBottom: 40 }}>
-        {progressions.length > 0 ? (
-          progressions.map(p => (
-            <div key={p.id} className="ligne-progression">
-              <div style={{ flex: 1 }}>
-                <div className="matiere-nom">{p.matiere_nom}</div>
-                <div className="barre-progression-conteneur">
-                  <div className="barre-progression" style={{ width: `${p.niveau_maitrise}%` }} />
-                </div>
+            ))
+          ) : (
+            <div className="etat-vide">
+              <div className="etat-vide-icone">
+                <GraduationCap size={40} strokeWidth={1.2} />
               </div>
-              <div className="pourcentage">{Math.round(p.niveau_maitrise)}%</div>
+              <p>Tu n'as pas encore de progression enregistrée.</p>
+              <p className="texte-doux" style={{ fontSize: '0.9rem', marginTop: -12 }}>
+                Passe ton premier examen pour commencer à suivre ton évolution.
+              </p>
+              <Link to="/examens" className="btn btn-primaire">Voir les examens disponibles</Link>
             </div>
-          ))
-        ) : (
-          <div className="etat-vide">
-            <div className="etat-vide-icone">
-              <GraduationCap size={40} strokeWidth={1.2} />
-            </div>
-            <p>Tu n'as pas encore de progression enregistrée.</p>
-            <p className="texte-doux" style={{ fontSize: '0.9rem', marginTop: -12 }}>
-              Passe ton premier examen pour commencer à suivre ton évolution.
-            </p>
-            <Link to="/examens" className="btn btn-primaire">Voir les examens disponibles</Link>
-          </div>
-        )}
-      </div>
-        </>
-      )}
+          )}
+        </div>
+      </ChargementFluide>
 
       <div className="raccourcis-dashboard">
         {raccourcis.map(r => (

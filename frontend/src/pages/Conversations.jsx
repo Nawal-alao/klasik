@@ -4,6 +4,7 @@ import { Search, MessageCircle } from 'lucide-react'
 import api from '../api/axios'
 import AvatarInitiales from '../components/AvatarInitiales'
 import Squelette from '../components/Squelette'
+import ChargementFluide from '../components/ChargementFluide'
 
 function normaliser(str) {
   return (str || '')
@@ -79,48 +80,53 @@ export default function Conversations() {
         />
       </div>
 
-      {loading ? (
-        <div className="liste-conversations">
-          {Array.from({ length: 4 }, (_, i) => <SqueletteConversation key={i} />)}
-        </div>
-      ) : filtres.length > 0 ? (
-        <div className="liste-conversations">
-          {filtres.map(s => (
-            <Link key={s.id} to={`/conversations/${s.id}`} className="conversation-item">
-              <AvatarInitiales prenom={s.interlocuteur_prenom} nom={s.interlocuteur?.split(' ').slice(1).join(' ')} taille={48} />
-              <div className="conversation-corps">
-                <div className="conversation-tete">
-                  <span className="conversation-nom">{s.interlocuteur}</span>
-                  <span className="matiere-tag">{s.matiere}</span>
-                </div>
-                <div className="conversation-apercu">
-                  <p className="conversation-dernier-msg">
-                    {s.dernier_message || 'Aucun message pour le moment.'}
-                  </p>
-                  {s.dernier_message_date && (
-                    <span className="conversation-date">{formaterDate(s.dernier_message_date)}</span>
-                  )}
-                </div>
-              </div>
-              {s.messages_non_lus > 0 && (
-                <span className="badge-non-lus">{s.messages_non_lus}</span>
-              )}
-            </Link>
-          ))}
-        </div>
-      ) : (
-        <div className="carte">
-          <div className="etat-vide">
-            <div className="etat-vide-icone">
-              <MessageCircle size={40} strokeWidth={1.2} />
-            </div>
-            <p>Tes conversations apparaîtront ici.</p>
-            <p className="texte-doux" style={{ fontSize: '0.9rem', marginTop: -12 }}>
-              Commence à échanger avec tes mentors pour voir tes discussions ici.
-            </p>
+      <ChargementFluide
+        isLoading={loading}
+        squelette={
+          <div className="liste-conversations">
+            {Array.from({ length: 4 }, (_, i) => <SqueletteConversation key={i} />)}
           </div>
-        </div>
-      )}
+        }
+      >
+        {filtres.length > 0 ? (
+          <div className="liste-conversations">
+            {filtres.map(s => (
+              <Link key={s.id} to={`/conversations/${s.id}`} className="conversation-item">
+                <AvatarInitiales prenom={s.interlocuteur_prenom} nom={s.interlocuteur?.split(' ').slice(1).join(' ')} taille={48} />
+                <div className="conversation-corps">
+                  <div className="conversation-tete">
+                    <span className="conversation-nom">{s.interlocuteur}</span>
+                    <span className="matiere-tag">{s.matiere}</span>
+                  </div>
+                  <div className="conversation-apercu">
+                    <p className="conversation-dernier-msg">
+                      {s.dernier_message || 'Aucun message pour le moment.'}
+                    </p>
+                    {s.dernier_message_date && (
+                      <span className="conversation-date">{formaterDate(s.dernier_message_date)}</span>
+                    )}
+                  </div>
+                </div>
+                {s.messages_non_lus > 0 && (
+                  <span className="badge-non-lus">{s.messages_non_lus}</span>
+                )}
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="carte">
+            <div className="etat-vide">
+              <div className="etat-vide-icone">
+                <MessageCircle size={40} strokeWidth={1.2} />
+              </div>
+              <p>Tes conversations apparaîtront ici.</p>
+              <p className="texte-doux" style={{ fontSize: '0.9rem', marginTop: -12 }}>
+                Commence à échanger avec tes mentors pour voir tes discussions ici.
+              </p>
+            </div>
+          </div>
+        )}
+      </ChargementFluide>
     </main>
   )
 }

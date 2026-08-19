@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api/',
+  baseURL: '/api/',
 })
 
 const TOKEN_KEY = 'access_token'
@@ -72,7 +72,7 @@ api.interceptors.response.use(
 
     try {
       const { data } = await axios.post(
-        'http://127.0.0.1:8000/api/auth/token/refresh/',
+        '/api/auth/token/refresh/',
         { refresh }
       )
       sessionStorage.setItem(TOKEN_KEY, data.access)
