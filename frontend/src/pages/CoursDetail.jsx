@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import DOMPurify from 'dompurify'
-import { Check, Bookmark, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Check, Bookmark } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
@@ -64,9 +64,6 @@ export default function CoursDetail() {
   if (!cours) return <main><div className="etat-vide"><p>Chargement…</p></div></main>
 
   const sequences = cours.sequences || []
-  const activeIdx = sequences.findIndex(s => s.id === activeSeq)
-  const hasPrev = activeIdx > 0
-  const hasNext = activeIdx < sequences.length - 1
   const classeLabel = CLASSES_LABEL[cours.classe_scolaire] || cours.classe_scolaire
 
   return (
@@ -139,25 +136,6 @@ export default function CoursDetail() {
                   dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(seq.contenu) }} />
               </article>
             ))}
-
-            <nav className="navigation-sequences">
-              <div>
-                {hasPrev ? (
-                  <Link to="#" className="btn btn-secondaire"
-                    onClick={(e) => { e.preventDefault(); setActiveSeq(sequences[activeIdx - 1].id); document.getElementById(`sequence-${sequences[activeIdx - 1].id}`)?.scrollIntoView({ behavior: 'smooth' }); }}>
-                    <ChevronLeft size={16} /> Leçon précédente
-                  </Link>
-                ) : <span />}
-              </div>
-              <div>
-                {hasNext ? (
-                  <Link to="#" className="btn btn-primaire"
-                    onClick={(e) => { e.preventDefault(); setActiveSeq(sequences[activeIdx + 1].id); document.getElementById(`sequence-${sequences[activeIdx + 1].id}`)?.scrollIntoView({ behavior: 'smooth' }); }}>
-                    Leçon suivante <ChevronRight size={16} />
-                  </Link>
-                ) : <span />}
-              </div>
-            </nav>
           </div>
         </div>
       ) : (

@@ -32,10 +32,21 @@ function extraireInitiales(prenom, nom) {
   return (p + n).toUpperCase() || '?'
 }
 
-export default function AvatarInitiales({ prenom, nom, taille = 48, src, className = '' }) {
+export default function AvatarInitiales({ prenom, nom, taille = 48, src, className = '', role }) {
   const cle = `${prenom || ''}${nom || ''}`
   const idx = hashCode(cle) % PALETTE.length
   const initiales = extraireInitiales(prenom, nom)
+
+  let bg = PALETTE[idx]
+  let fg = PALETTE_TEXT[idx]
+
+  if (role === 'eleve') {
+    bg = 'rgba(75, 123, 90, 0.12)'
+    fg = 'var(--couleur-succes)'
+  } else if (role === 'mentor') {
+    bg = 'var(--couleur-accent-doux)'
+    fg = 'var(--couleur-accent)'
+  }
 
   if (src) {
     return (
@@ -55,8 +66,8 @@ export default function AvatarInitiales({ prenom, nom, taille = 48, src, classNa
         width: taille,
         height: taille,
         borderRadius: '50%',
-        background: PALETTE[idx],
-        color: PALETTE_TEXT[idx],
+        background: bg,
+        color: fg,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

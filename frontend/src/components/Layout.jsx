@@ -99,9 +99,11 @@ export default function Layout() {
         <Outlet />
       </EntreePage>
 
-      <footer>
-        <p>© {new Date().getFullYear()} Évoly — Plateforme éducative béninoise.</p>
-      </footer>
+      {!/^\/conversations\/\d+$/.test(location.pathname) && (
+        <footer>
+          <p>© {new Date().getFullYear()} Évoly — Plateforme éducative béninoise.</p>
+        </footer>
+      )}
     </>
   )
 }
