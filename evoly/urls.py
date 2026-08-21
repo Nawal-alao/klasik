@@ -18,7 +18,7 @@ urlpatterns = [
     path('evaluations/', include('evaluations.urls')),
     path('pedagogie/', include('pedagogie.urls')),
     path('communaute/', include('communaute.urls')),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('ckeditor5/', include('django_ckeditor_5.urls')),
 ]
 
 if settings.DEBUG:

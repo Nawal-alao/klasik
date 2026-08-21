@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import DOMPurify from 'dompurify'
+import ContenuRiche from '../components/ContenuRiche'
 import { Check, Bookmark } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useNotification } from '../context/NotificationContext'
@@ -132,8 +132,7 @@ export default function CoursDetail() {
               <article key={seq.id} className="sequence" id={`sequence-${seq.id}`}>
                 <h3>Séquence {seq.ordre}</h3>
                 <h2>{seq.titre}</h2>
-                <div className="contenu-sequence"
-                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(seq.contenu) }} />
+                <ContenuRiche contenu={seq.contenu} className="contenu-sequence" />
               </article>
             ))}
           </div>

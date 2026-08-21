@@ -1564,7 +1564,6 @@ input:focus, select:focus, textarea:focus {
   padding: 0 4px;
   margin-bottom: 2px;
 }
-.conv-msg-header-mien { flex-direction: row-reverse; }
 .conv-msg-auteur {
   font-weight: 600;
   font-size: 0.8rem;
@@ -1669,15 +1668,19 @@ input:focus, select:focus, textarea:focus {
 }
 .conv-bulle-wrap:hover .conv-more-btn { opacity: 1; }
 .conv-more-btn:hover { background: rgba(42, 38, 34, 0.06); }
-.conv-lu {
-  font-size: 0.68rem;
-  color: var(--couleur-texte-doux);
-  flex-shrink: 0;
-  line-height: 1;
-  padding-bottom: 1px;
-  user-select: none;
+
+/* — Bulle footer (heure + statut dans la bulle) — */
+.conv-bulle-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 1px;
 }
-.conv-lu-oui { color: var(--couleur-accent); }
+.conv-check-icon {
+  flex-shrink: 0;
+  color: var(--couleur-accent);
+}
 
 /* — Date separator — */
 .conv-sep-date {

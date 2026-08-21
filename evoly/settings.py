@@ -56,8 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'ckeditor',
-    'ckeditor_uploader',
+    'django_ckeditor_5',
     'comptes',
     'dashboard',
     'abonnements',
@@ -111,20 +110,46 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# CKEditor
-CKEDITOR_UPLOAD_PATH = 'uploads/'
-CKEDITOR_CONFIGS = {
+# CKEditor 5
+CKEDITOR_5_CONFIGS = {
     'default': {
-        'toolbar': 'full',
-        'height': 400,
-        'width': '100%',
+        'toolbar': [
+            'heading', '|', 'bold', 'italic', 'link',
+            'bulletedList', 'numberedList', 'blockQuote',
+            'imageUpload', 'insertTable', 'codeBlock',
+            'sourceEditing',
+        ],
+        'language': 'fr',
     },
     'contenu_interactif': {
-        'toolbar': 'full',
-        'height': 400,
-        'width': '100%',
-        'extraAllowedContent': 'script(*); iframe[*]',
-        'allowedContent': True,
+        'toolbar': [
+            'heading', '|', 'bold', 'italic', 'link',
+            'bulletedList', 'numberedList', 'blockQuote',
+            'imageUpload', 'insertTable', 'codeBlock',
+            'htmlEmbed', 'sourceEditing',
+        ],
+        'htmlSupport': {
+            'allow': [
+                {
+                    'name': 'script',
+                    'attributes': True,
+                    'classes': True,
+                    'styles': True,
+                },
+                {
+                    'name': 'iframe',
+                    'attributes': True,
+                    'classes': True,
+                    'styles': True,
+                },
+                {
+                    'name': 'canvas',
+                    'attributes': True,
+                    'classes': True,
+                    'styles': True,
+                },
+            ],
+        },
     },
 }
 

@@ -1,5 +1,5 @@
 from django.db import models
-from ckeditor_uploader.fields import RichTextUploadingField
+from django_ckeditor_5.fields import CKEditor5Field
 from django.contrib.auth.models import User
 
 
@@ -50,7 +50,7 @@ class Question(models.Model):
     examen = models.ForeignKey(Examen, on_delete=models.CASCADE, related_name="questions")
  
     # AVANT : enonce = models.TextField()
-    enonce = RichTextUploadingField()  # NOUVEAU — accepte images, schémas, mise en forme
+    enonce = CKEditor5Field(config_name='default')
  
     type_question = models.CharField(max_length=10, choices=Type.choices, default=Type.CHOIX_MULTIPLE)
     notion = models.CharField(max_length=150)

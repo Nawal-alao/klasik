@@ -46,7 +46,24 @@ function estMien(message, user) {
   return message.auteur?.id === user?.id || message.auteur?.username === user?.username
 }
 
-function BulleMessage({ contenu, bullClass, tailClass }) {
+function CheckIcon({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg" className="conv-check-icon">
+      <path d="M1.5 5.5L4.5 8.5L11 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function DoubleCheckIcon({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 18 11" fill="none" xmlns="http://www.w3.org/2000/svg" className="conv-check-icon">
+      <path d="M1.5 5.5L4.5 8.5L11 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5.5 5.5L8.5 8.5L15 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function BulleMessage({ contenu, bullClass, tailClass, footer }) {
   const texteRef = useRef(null)
   const [expanded, setExpanded] = useState(false)
   const [isLong, setIsLong] = useState(false)
@@ -69,6 +86,7 @@ function BulleMessage({ contenu, bullClass, tailClass }) {
         <p ref={texteRef} className={`conv-texte${tronque ? ' conv-texte-tronque' : ''}`}>
           {contenu}
         </p>
+        {footer && <div className="conv-bulle-footer">{footer}</div>}
       </div>
       {isLong && (
         <button type="button" className="conv-voir-plus" onClick={() => setExpanded(e => !e)}>
@@ -318,10 +336,9 @@ export default function ConversationDetail() {
                 )}
 
                 <div className={`conv-content ${contentClass}`}>
-                  {showHeader && (
-                    <div className={`conv-msg-header ${item.estMien ? 'conv-msg-header-mien' : ''}`}>
+                  {showHeader && !item.estMien && (
+                    <div className="conv-msg-header">
                       <span className="conv-msg-auteur">{item.prenom}</span>
-                      <span className="conv-msg-time">{formaterHeure(m.date_envoi)}</span>
                     </div>
                   )}
 
@@ -330,6 +347,12 @@ export default function ConversationDetail() {
                       contenu={m.contenu}
                       bullClass={bullClass}
                       tailClass={item.dernierDuGroupe ? (item.estMien ? 'conv-bulle-tail-mien' : 'conv-bulle-tail-autre') : ''}
+                      footer={item.estMien ? (
+                        <>
+                          <span className="conv-msg-time">{formaterHeure(m.date_envoi)}</span>
+                          {m.lu ? <DoubleCheckIcon size={16} /> : <CheckIcon size={14} />}
+                        </>
+                      ) : null}
                     />
 
                     <button
@@ -343,12 +366,6 @@ export default function ConversationDetail() {
                     >
                       <MoreHorizontal size={14} strokeWidth={2} />
                     </button>
-
-                    {item.estMien && (
-                      <span className={`conv-lu ${m.lu ? 'conv-lu-oui' : ''}`}>
-                        {m.lu ? '✓✓' : '✓'}
-                      </span>
-                    )}
                   </div>
                 </div>
 

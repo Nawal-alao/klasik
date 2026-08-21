@@ -1,5 +1,5 @@
 from django.db import models
-from ckeditor_uploader.fields import RichTextUploadingField
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 # CHOIX PARTAGÉS (classe scolaire, série)
@@ -74,7 +74,7 @@ class Sequence(models.Model):
     cours = models.ForeignKey(Cours, on_delete=models.CASCADE, related_name="sequences")
     titre = models.CharField(max_length=200)
     ordre = models.PositiveSmallIntegerField(help_text="Position de la séquence dans le cours (1, 2, 3...).")
-    contenu = RichTextUploadingField()
+    contenu = CKEditor5Field(config_name='contenu_interactif')
 
     class Meta:
         ordering = ["ordre"]

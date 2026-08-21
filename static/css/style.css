@@ -601,6 +601,9 @@ input:focus, select:focus, textarea:focus {
    correct sans imposer nos propres marges trop strictes */
 .contenu-sequence { font-size: 1rem; line-height: 1.7; }
 .contenu-sequence img { max-width: 100%; border-radius: var(--rayon-petit); }
+.contenu-sequence figure.image img { max-width: 100%; border-radius: var(--rayon-petit); }
+.contenu-sequence figure.table table { width: 100%; border-collapse: collapse; }
+.contenu-sequence figure.table { max-width: 100%; overflow-x: auto; }
 .contenu-sequence h2, .contenu-sequence h3 { margin-top: 1.4em; }
 .contenu-sequence pre, .contenu-sequence code {
   background: var(--couleur-fond);
