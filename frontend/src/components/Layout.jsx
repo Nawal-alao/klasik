@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { Suspense, useState, useEffect } from 'react'
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useNotification, ConteneurNotifications } from '../context/NotificationContext'
@@ -96,7 +96,16 @@ export default function Layout() {
       <ConteneurNotifications notifications={notifications} onRetirer={retirer} />
 
       <EntreePage key={location.pathname}>
-        <Outlet />
+        <Suspense fallback={
+          <main>
+            <div className="etat-vide" style={{ minHeight: '40vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+              <div className="squelette" style={{ width: 180, height: 20, borderRadius: 8 }} />
+              <div className="squelette" style={{ width: 140, height: 14, borderRadius: 8 }} />
+            </div>
+          </main>
+        }>
+          <Outlet />
+        </Suspense>
       </EntreePage>
 
       {!/^\/conversations\/\d+$/.test(location.pathname) && (

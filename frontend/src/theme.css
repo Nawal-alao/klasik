@@ -2166,14 +2166,17 @@ footer {
   .liste-simple li > div:last-child {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 16px;
   }
 
-  /* Notation étoiles — cible tactile 44px */
+  /* Notation étoiles — taille compacte mobile, pas de min-width
+     pour éviter le débordement (5 × 44px = 220px hors écran) */
   .notation-mentor button {
     font-size: 1.35rem;
-    padding: 6px;
-    min-width: 44px;
-    min-height: 44px;
+    padding: 8px 4px;
+    min-width: 0;
+    min-height: 0;
   }
 
   /* Cartes examen : empiler + bouton pleine largeur */

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import DOMPurify from 'dompurify'
-import renderMathInElement from 'katex/contrib/auto-render'
+import loadKatex from '../utils/katexLoader'
 import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
 
@@ -18,7 +18,11 @@ const KATEX_DELIMITERS = {
 function KaTeXText({ text }) {
   const ref = useRef(null)
   useEffect(() => {
-    if (ref.current) renderMathInElement(ref.current, KATEX_DELIMITERS)
+    if (ref.current) {
+      loadKatex().then(renderMathInElement => {
+        if (ref.current) renderMathInElement(ref.current, KATEX_DELIMITERS)
+      })
+    }
   }, [text])
   return <span ref={ref}>{text}</span>
 }
@@ -28,7 +32,9 @@ function EnonceAvecMath({ html }) {
   useEffect(() => {
     if (ref.current) {
       ref.current.innerHTML = DOMPurify.sanitize(html)
-      renderMathInElement(ref.current, KATEX_DELIMITERS)
+      loadKatex().then(renderMathInElement => {
+        if (ref.current) renderMathInElement(ref.current, KATEX_DELIMITERS)
+      })
     }
   }, [html])
   return <div className="enonce" ref={ref} />

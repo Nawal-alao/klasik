@@ -211,9 +211,9 @@ export default function DashboardEleve() {
                     <strong>{s.mentor_name}</strong>
                     <span className="texte-doux"> — {s.matiere_nom}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flexWrap: 'wrap' }}>
                     <Etoiles note={s.note_evaluation} noteCible={s.note_evaluation} estActive suiviId={s.id} onNoter={noter} />
-                    <Link to={`/conversations/${s.id}`} className="btn btn-secondaire">Écrire</Link>
+                    <Link to={`/conversations/${s.id}`} className="btn btn-secondaire" style={{ flexShrink: 0 }}>Écrire</Link>
                   </div>
                 </li>
               ))}

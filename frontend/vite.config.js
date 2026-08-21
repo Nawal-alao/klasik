@@ -13,4 +13,21 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/react-dom/') || id.includes('node_modules/react/')) {
+            return 'vendor-react'
+          }
+          if (id.includes('node_modules/react-router') || id.includes('node_modules/@remix-run')) {
+            return 'vendor-router'
+          }
+          if (id.includes('node_modules/axios')) {
+            return 'vendor-axios'
+          }
+        },
+      },
+    },
+  },
 })

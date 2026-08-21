@@ -99,6 +99,17 @@ function BulleMessage({ contenu, bullClass, tailClass, footer }) {
 
 function MenuContextuel({ x, y, texte, onCopier, onFermer }) {
   const ref = useRef(null)
+  const [pos, setPos] = useState({ x, y })
+  useEffect(() => {
+    if (!ref.current) return
+    const rect = ref.current.getBoundingClientRect()
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    setPos({
+      x: Math.min(x, vw - rect.width - 8),
+      y: Math.min(y, vh - rect.height - 8),
+    })
+  }, [x, y])
   useEffect(() => {
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) onFermer() }
     document.addEventListener('mousedown', handler)
@@ -109,7 +120,7 @@ function MenuContextuel({ x, y, texte, onCopier, onFermer }) {
     }
   }, [onFermer])
 
-  const style = { position: 'fixed', top: y, left: x, zIndex: 10000 }
+  const style = { position: 'fixed', top: pos.y, left: pos.x, zIndex: 10000 }
   return createPortal(
     <div ref={ref} className="ctx-menu" style={style}>
       <button type="button" className="ctx-menu-item" onClick={() => onCopier(texte)}>

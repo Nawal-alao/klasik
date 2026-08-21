@@ -5,24 +5,24 @@ import { NotificationProvider } from './context/NotificationContext'
 import Layout from './components/Layout'
 import RouteProtegee from './components/RouteProtegee'
 
-import Home from './pages/Home'
-import Connexion from './pages/Connexion'
-import InscriptionEleve from './pages/InscriptionEleve'
-import InscriptionMentor from './pages/InscriptionMentor'
-import DashboardEleve from './pages/DashboardEleve'
-import DashboardMentor from './pages/DashboardMentor'
-import CoursList from './pages/CoursList'
-import CoursDetail from './pages/CoursDetail'
-import ExamensList from './pages/ExamensList'
-import PasserExamen from './pages/PasserExamen'
-import ResultatDetail from './pages/ResultatDetail'
-import Mentors from './pages/Mentors'
-import Profil from './pages/Profil'
-import Abonnement from './pages/Abonnement'
-import Communaute from './pages/Communaute'
-import GroupeDetail from './pages/GroupeDetail'
-import Conversations from './pages/Conversations'
-import ConversationDetail from './pages/ConversationDetail'
+const Home = React.lazy(() => import('./pages/Home'))
+const Connexion = React.lazy(() => import('./pages/Connexion'))
+const InscriptionEleve = React.lazy(() => import('./pages/InscriptionEleve'))
+const InscriptionMentor = React.lazy(() => import('./pages/InscriptionMentor'))
+const DashboardEleve = React.lazy(() => import('./pages/DashboardEleve'))
+const DashboardMentor = React.lazy(() => import('./pages/DashboardMentor'))
+const CoursList = React.lazy(() => import('./pages/CoursList'))
+const CoursDetail = React.lazy(() => import('./pages/CoursDetail'))
+const ExamensList = React.lazy(() => import('./pages/ExamensList'))
+const PasserExamen = React.lazy(() => import('./pages/PasserExamen'))
+const ResultatDetail = React.lazy(() => import('./pages/ResultatDetail'))
+const Mentors = React.lazy(() => import('./pages/Mentors'))
+const Profil = React.lazy(() => import('./pages/Profil'))
+const Abonnement = React.lazy(() => import('./pages/Abonnement'))
+const Communaute = React.lazy(() => import('./pages/Communaute'))
+const GroupeDetail = React.lazy(() => import('./pages/GroupeDetail'))
+const Conversations = React.lazy(() => import('./pages/Conversations'))
+const ConversationDetail = React.lazy(() => import('./pages/ConversationDetail'))
 
 export default function App() {
   return (

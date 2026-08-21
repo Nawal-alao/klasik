@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react'
 import DOMPurify from 'dompurify'
-import renderMathInElement from 'katex/contrib/auto-render'
+import loadKatex from '../utils/katexLoader'
 
 function extraireScripts(html) {
   const doc = new DOMParser().parseFromString(html, 'text/html')
@@ -45,6 +45,13 @@ function injecterScriptsSequentiellement(container, scripts, index = 0) {
   }
 }
 
+const KATEX_DELIMITERS = [
+  { left: '$$', right: '$$', display: true },
+  { left: '$', right: '$', display: false },
+  { left: '\\(', right: '\\)', display: false },
+  { left: '\\[', right: '\\]', display: true },
+]
+
 export default function ContenuRiche({ contenu, className = '' }) {
   const ref = useRef(null)
 
@@ -68,14 +75,13 @@ export default function ContenuRiche({ contenu, className = '' }) {
       injecterScriptsSequentiellement(ref.current, scripts, 0)
     }
 
-    renderMathInElement(ref.current, {
-      delimiters: [
-        { left: '$$', right: '$$', display: true },
-        { left: '$', right: '$', display: false },
-        { left: '\\(', right: '\\)', display: false },
-        { left: '\\[', right: '\\]', display: true },
-      ],
-      throwOnError: false,
+    loadKatex().then(renderMathInElement => {
+      if (ref.current) {
+        renderMathInElement(ref.current, {
+          delimiters: KATEX_DELIMITERS,
+          throwOnError: false,
+        })
+      }
     })
 
     return () => {
