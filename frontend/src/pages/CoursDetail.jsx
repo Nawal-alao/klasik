@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import ContenuRiche from '../components/ContenuRiche'
 import { Check, Bookmark } from 'lucide-react'
@@ -21,6 +21,7 @@ export default function CoursDetail() {
   const [loadingTermine, setLoadingTermine] = useState(false)
   const [favori, setFavori] = useState(false)
   const [loadingFavori, setLoadingFavori] = useState(false)
+  const observerRef = useRef(null)
 
   const isEleve = user?.classe_scolaire !== undefined
 
@@ -29,9 +30,60 @@ export default function CoursDetail() {
       setCours(r.data)
       setTermine(r.data.termine)
       setFavori(r.data.favori)
-      if (r.data.sequences?.length) setActiveSeq(r.data.sequences[0].id)
+      if (r.data.sequences?.length) {
+        const hash = window.location.hash.replace('#sequence-', '')
+        const fromHash = r.data.sequences.find(s => String(s.id) === hash)
+        setActiveSeq(fromHash ? fromHash.id : r.data.sequences[0].id)
+      }
     })
   }, [id])
+
+  // IntersectionObserver : synchronise activeSeq avec la séquence visible
+  useEffect(() => {
+    if (!cours?.sequences?.length) return
+
+    const handleIntersect = (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          const id = entry.target.id.replace('sequence-', '')
+          setActiveSeq(Number(id))
+        }
+      }
+    }
+
+    observerRef.current = new IntersectionObserver(handleIntersect, {
+      rootMargin: '-20% 0px -60% 0px',
+      threshold: 0,
+    })
+
+    const timer = setTimeout(() => {
+      cours.sequences.forEach(seq => {
+        const el = document.getElementById(`sequence-${seq.id}`)
+        if (el) observerRef.current.observe(el)
+      })
+    }, 300)
+
+    return () => {
+      clearTimeout(timer)
+      if (observerRef.current) observerRef.current.disconnect()
+    }
+  }, [cours])
+
+  // Met à jour le hash URL quand activeSeq change
+  useEffect(() => {
+    if (activeSeq) {
+      const hash = `#sequence-${activeSeq}`
+      if (window.location.hash !== hash) {
+        history.replaceState(null, '', hash)
+      }
+    }
+  }, [activeSeq])
+
+  const scrollToSeq = useCallback((seqId) => {
+    setActiveSeq(seqId)
+    const el = document.getElementById(`sequence-${seqId}`)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [])
 
   const toggleTermine = () => {
     setLoadingTermine(true)
@@ -113,6 +165,10 @@ export default function CoursDetail() {
               <div className="sommaire-badge">
                 {termine ? (
                   <span className="badge badge-termine"><Check size={12} strokeWidth={3} /> Terminé</span>
+                ) : activeSeq ? (
+                  <span className="badge badge-inactif">
+                    Séquence {sequences.find(s => s.id === activeSeq)?.ordre || '…'} en cours
+                  </span>
                 ) : (
                   <span className="badge badge-inactif">En cours</span>
                 )}
@@ -121,7 +177,7 @@ export default function CoursDetail() {
             {sequences.map((seq, idx) => (
               <a key={seq.id} href={`#sequence-${seq.id}`}
                 className={`sommaire-item${activeSeq === seq.id ? ' actif' : ''}`}
-                onClick={() => setActiveSeq(seq.id)}>
+                onClick={(e) => { e.preventDefault(); scrollToSeq(seq.id) }}>
                 <span className="sommaire-num">{idx + 1}</span>
                 <span>{seq.titre}</span>
               </a>

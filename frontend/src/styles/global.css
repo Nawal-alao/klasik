@@ -154,6 +154,8 @@
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 12px;
+  overflow: hidden;
+  min-width: 0;
 }
 .carte-cours-header .matiere-tag {
   margin-bottom: 0;

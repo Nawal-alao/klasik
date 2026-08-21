@@ -57,7 +57,7 @@ export default function ResultatDetail() {
             <div className={`puce ${r.correct ? 'puce-correct' : 'puce-incorrect'}`}>
               {r.correct ? '✓' : '✗'}
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <p style={{ fontWeight: 600, marginBottom: 4 }}>
                 Question {i + 1} — {r.question?.notion}
               </p>

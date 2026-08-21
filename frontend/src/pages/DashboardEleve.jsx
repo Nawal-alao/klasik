@@ -211,7 +211,7 @@ export default function DashboardEleve() {
                     <strong>{s.mentor_name}</strong>
                     <span className="texte-doux"> — {s.matiere_nom}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0 }}>
                     <Etoiles note={s.note_evaluation} noteCible={s.note_evaluation} estActive suiviId={s.id} onNoter={noter} />
                     <Link to={`/conversations/${s.id}`} className="btn btn-secondaire">Écrire</Link>
                   </div>
@@ -239,7 +239,7 @@ export default function DashboardEleve() {
           {progressions.length > 0 ? (
             progressions.map(p => (
               <div key={p.id} className="ligne-progression">
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="matiere-nom">{p.matiere_nom}</div>
                   <div className="barre-progression-conteneur">
                     <div className="barre-progression" style={{ width: `${p.niveau_maitrise}%` }} />

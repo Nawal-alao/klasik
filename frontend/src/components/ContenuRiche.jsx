@@ -83,5 +83,5 @@ export default function ContenuRiche({ contenu, className = '' }) {
     }
   }, [contenu])
 
-  return <div ref={ref} className={className} />
+  return <div ref={ref} className={`contenu-overflow ${className}`} />
 }
