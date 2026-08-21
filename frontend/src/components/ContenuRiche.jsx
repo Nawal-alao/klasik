@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react'
 import DOMPurify from 'dompurify'
+import renderMathInElement from 'katex/contrib/auto-render'
 
 function extraireScripts(html) {
   const doc = new DOMParser().parseFromString(html, 'text/html')
@@ -51,11 +52,31 @@ export default function ContenuRiche({ contenu, className = '' }) {
     if (!ref.current || !contenu) return
 
     const { cleanHtml, scripts } = extraireScripts(contenu)
-    ref.current.innerHTML = DOMPurify.sanitize(cleanHtml)
+    // Sécurisé par construction : ce composant n'affiche que du
+    // contenu de Sequence, rédigé exclusivement par l'admin via
+    // CKEditor 5 (config contenu_interactif), jamais par un élève
+    // ou une entrée utilisateur. Ne jamais réutiliser cette
+    // configuration DOMPurify élargie pour afficher du contenu
+    // provenant d'une source non fiable (messages, profils, tout
+    // champ modifiable par un élève ou un mentor).
+    ref.current.innerHTML = DOMPurify.sanitize(cleanHtml, {
+      ADD_TAGS: ['script', 'iframe', 'canvas'],
+      ADD_ATTR: ['src', 'allow', 'allowfullscreen', 'frameborder', 'width', 'height'],
+    })
 
     if (scripts.length > 0) {
       injecterScriptsSequentiellement(ref.current, scripts, 0)
     }
+
+    renderMathInElement(ref.current, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '\\[', right: '\\]', display: true },
+      ],
+      throwOnError: false,
+    })
 
     return () => {
       if (ref.current) ref.current.innerHTML = ''

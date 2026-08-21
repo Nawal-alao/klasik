@@ -604,6 +604,22 @@ input:focus, select:focus, textarea:focus {
 .contenu-sequence figure.image img { max-width: 100%; border-radius: var(--rayon-petit); }
 .contenu-sequence figure.table table { width: 100%; border-collapse: collapse; }
 .contenu-sequence figure.table { max-width: 100%; overflow-x: auto; }
+.contenu-sequence table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+.contenu-sequence td, .contenu-sequence th {
+  border: 1px solid var(--couleur-bordure);
+  padding: 8px 12px;
+  text-align: left;
+}
+.contenu-sequence th {
+  background: var(--couleur-fond);
+  font-weight: 600;
+}
+.contenu-sequence caption {
+  caption-side: bottom;
+  font-size: 0.85em;
+  color: var(--couleur-texte-doux, #666);
+  padding-top: 4px;
+}
 .contenu-sequence h2, .contenu-sequence h3 { margin-top: 1.4em; }
 .contenu-sequence pre, .contenu-sequence code {
   background: var(--couleur-fond);

@@ -1,7 +1,26 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import DOMPurify from 'dompurify'
+import renderMathInElement from 'katex/contrib/auto-render'
 import api from '../api/axios'
+
+const KATEX_DELIMITERS = {
+  delimiters: [
+    { left: '$$', right: '$$', display: true },
+    { left: '$', right: '$', display: false },
+    { left: '\\(', right: '\\)', display: false },
+    { left: '\\[', right: '\\]', display: true },
+  ],
+  throwOnError: false,
+}
+
+function KaTeXText({ text }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    if (ref.current) renderMathInElement(ref.current, KATEX_DELIMITERS)
+  }, [text])
+  return <span ref={ref}>{text}</span>
+}
 
 export default function ResultatDetail() {
   const { id } = useParams()
@@ -43,11 +62,11 @@ export default function ResultatDetail() {
                 Question {i + 1} — {r.question?.notion}
               </p>
               <p style={{ marginBottom: 4 }}>
-                Ta réponse : <strong>{r.reponse_donnee || '—'}</strong>
+                Ta réponse : <strong><KaTeXText text={r.reponse_donnee || '—'} /></strong>
               </p>
               {!r.correct && (
                 <p style={{ color: 'var(--couleur-succes)', marginBottom: 0 }}>
-                  Bonne réponse : <strong>{r.question?.bonne_reponse || '—'}</strong>
+                  Bonne réponse : <strong><KaTeXText text={r.question?.bonne_reponse || '—'} /></strong>
                 </p>
               )}
             </div>

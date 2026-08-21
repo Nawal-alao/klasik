@@ -1,8 +1,38 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import DOMPurify from 'dompurify'
+import renderMathInElement from 'katex/contrib/auto-render'
 import { useNotification } from '../context/NotificationContext'
 import api from '../api/axios'
+
+const KATEX_DELIMITERS = {
+  delimiters: [
+    { left: '$$', right: '$$', display: true },
+    { left: '$', right: '$', display: false },
+    { left: '\\(', right: '\\)', display: false },
+    { left: '\\[', right: '\\]', display: true },
+  ],
+  throwOnError: false,
+}
+
+function KaTeXText({ text }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    if (ref.current) renderMathInElement(ref.current, KATEX_DELIMITERS)
+  }, [text])
+  return <span ref={ref}>{text}</span>
+}
+
+function EnonceAvecMath({ html }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.innerHTML = DOMPurify.sanitize(html)
+      renderMathInElement(ref.current, KATEX_DELIMITERS)
+    }
+  }, [html])
+  return <div className="enonce" ref={ref} />
+}
 
 export default function PasserExamen() {
   const { id } = useParams()
@@ -62,8 +92,7 @@ export default function PasserExamen() {
         {questions.map((q, i) => (
           <div key={q.id} className="question-bloc">
             <p className="numero-question">Question {i + 1} / {questions.length}</p>
-            <div className="enonce"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(q.enonce) }} />
+            <EnonceAvecMath html={q.enonce} />
 
             {q.type_question === 'QCM' && q.choix_reponses ? (
               q.choix_reponses.map((choix, ci) => (
@@ -72,7 +101,7 @@ export default function PasserExamen() {
                     value={choix} required
                     checked={reponses[q.id] === choix}
                     onChange={() => setReponse(q.id, choix)} />
-                  <label htmlFor={`q${q.id}-c${ci}`}>{choix}</label>
+                  <label htmlFor={`q${q.id}-c${ci}`}><KaTeXText text={choix} /></label>
                 </div>
               ))
             ) : (
