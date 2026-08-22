@@ -57,6 +57,12 @@ class PasserExamenView(LoginRequiredMixin, View):
         eleve = request.user.profil_eleve
         questions = examen.questions.all()
 
+        # Repassage : on remplace la tentative précédente pour que les
+        # réponses affichées et la progression reflètent la dernière.
+        ReponseEleve.objects.filter(
+            eleve=eleve, question__examen=examen,
+        ).delete()
+
         nombre_correct = 0
         total_questions = questions.count()
 
@@ -81,10 +87,13 @@ class PasserExamenView(LoginRequiredMixin, View):
 
         note = (nombre_correct / total_questions) * 20 if total_questions > 0 else 0
 
-        Resultat.objects.create(
+        Resultat.objects.update_or_create(
             eleve=eleve,
             examen=examen,
-            note=note,
+            defaults={
+                "note": note,
+                "date_passage": timezone.now(),
+            },
         )
 
         return redirect("evaluations:resultat_examen", pk=examen.pk)
