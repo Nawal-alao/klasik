@@ -1,7 +1,12 @@
 import axios from 'axios'
 
+// URL du backend Django. En production (Vercel) : variable d'environnement
+// VITE_API_URL (ex: https://evoly-api.onrender.com). En développement :
+// vide → baseURL relative "/api/" gérée par le proxy Vite (vite.config.js).
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '')
+
 const api = axios.create({
-  baseURL: '/api/',
+  baseURL: `${API_BASE}/api/`,
 })
 
 const TOKEN_KEY = 'access_token'
@@ -72,7 +77,7 @@ api.interceptors.response.use(
 
     try {
       const { data } = await axios.post(
-        '/api/auth/token/refresh/',
+        `${API_BASE}/api/auth/token/refresh/`,
         { refresh }
       )
       sessionStorage.setItem(TOKEN_KEY, data.access)

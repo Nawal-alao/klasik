@@ -1,5 +1,11 @@
 asgiref==3.12.1
 Django==6.1
 django-ckeditor-5>=0.2.20
+django-storages==1.14.6
 psycopg2-binary==2.9.12
 sqlparse==0.5.5
+
+# Production (Render)
+boto3==1.43.78
+gunicorn==26.1.0
+whitenoise==6.12.0

@@ -39,10 +39,35 @@ SECRET_KEY = (
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Lu depuis l'env (DEBUG=False sur Render via render.yaml).
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = ['*']
+def _liste_env(nom):
+    return [h.strip() for h in os.environ.get(nom, '').split(',') if h.strip()]
+
+if os.environ.get('DJANGO_ALLOWED_HOSTS'):
+    ALLOWED_HOSTS = _liste_env('DJANGO_ALLOWED_HOSTS')
+elif DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = []
+
+# Domaine(s) Vercel / Render autorisés en prod, lus depuis l'env
+# (ex: CORS_ALLOWED_ORIGINS=https://evoly.vercel.app,https://evoly-api.onrender.com)
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+] + _liste_env('CORS_ALLOWED_ORIGINS')
+CSRF_TRUSTED_ORIGINS = _liste_env('CSRF_TRUSTED_ORIGINS')
+
 CSRF_COOKIE_HTTPONLY = True
+
+# Derrière le proxy HTTPS de Render, il faut lui faire confiance pour
+# détecter le schéma https (redirections, CSRF, cookies sécurisés).
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -68,6 +93,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -106,9 +132,50 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+# Destination de collectstatic en production (servi par WhiteNoise)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 # Media (uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# ---------------------------------------------------------------
+# Stockage des fichiers
+#
+# - staticfiles : servi par WhiteNoise (compressé) en production.
+# - default (médias uploadés : images CKEditor des cours…) :
+#   * Supabase Storage (backend S3 de django-storages) dès que les
+#     variables AWS_S3_ENDPOINT_URL / AWS_STORAGE_BUCKET_NAME sont
+#     définies — INDISPENSABLE sur Render dont le disque est éphémère,
+#     sinon les fichiers uploadés sont perdus à chaque redéploiement.
+#   * système de fichiers local sinon (développement).
+# ---------------------------------------------------------------
+
+if os.environ.get('AWS_S3_ENDPOINT_URL') and os.environ.get('AWS_STORAGE_BUCKET_NAME'):
+    STORAGES = {
+        'default': {'BACKEND': 'storages.backends.s3.S3Storage'},
+        'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+    }
+
+    # Compatibilité S3 de Supabase Storage (valeurs issues du dashboard
+    # Supabase → Settings → Storage ; JAMAIS en dur ici).
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL')
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME', 'eu-west-3')
+
+    # Style d'adressage « path » requis par Supabase (<endpoint>/<bucket>/<clé>)
+    AWS_S3_ADDRESSING_STYLE = 'path'
+    # Bucket public : URLs directes sans signature (?X-Amz-…)
+    AWS_QUERYSTRING_AUTH = False
+    # Ne pas écraser un fichier existant : clé unique à chaque upload
+    AWS_S3_FILE_OVERWRITE = False
+else:
+    STORAGES = {
+        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+        'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+    }
 
 # CKEditor 5
 CKEDITOR_5_CONFIGS = {
