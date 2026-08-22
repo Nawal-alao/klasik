@@ -1,10 +1,10 @@
-# Klasik / Évoly
+# Évoly
 
 Plateforme éducative : cours, mentorat, évaluations et communauté.
 Monorepo en deux parties indépendantes :
 
 ```
-klasik/
+evoly/
 ├── backend/          # API Django + Django REST Framework
 │   ├── evoly/        # Configuration du projet (settings, urls, wsgi)
 │   ├── comptes/      # Élèves, mentors, authentification
