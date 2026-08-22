@@ -4,11 +4,16 @@
 # blueprints placés dans un sous-dossier. `rootDir: backend` indique à
 # Render que le service Django vit dans backend/.
 #
-# Les variables marquées `syncValue: false` sont créées VIDES dans le
-# dashboard Render : leurs valeurs secrètes (Supabase, Cohere…) doivent y
-# être renseignées manuellement, jamais commitées ici.
-#
 # Déploiement : dashboard Render → New → Blueprint → sélectionner ce repo.
+#
+# 🔑 SECRETS À AJOUTER MANUELLEMENT après la création du service
+#    (dashboard Render → evoly-api → Environment → Add Environment Variable),
+#    jamais commités ici :
+#      COHERE_API_KEY
+#      DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT   (Supabase)
+#      AWS_S3_ENDPOINT_URL, AWS_STORAGE_BUCKET_NAME,
+#      AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_REGION_NAME
+#      CORS_ALLOWED_ORIGINS, CSRF_TRUSTED_ORIGINS        (après Vercel)
 
 services:
   - type: web
@@ -29,40 +34,10 @@ services:
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
         value: ".onrender.com"
-      # À compléter après le déploiement Vercel (étape 5), ex :
-      #   https://evoly.vercel.app,https://evoly-api.onrender.com
-      - key: CORS_ALLOWED_ORIGINS
-        syncValue: false
-      - key: CSRF_TRUSTED_ORIGINS
-        syncValue: false
 
       # --- Secret généré automatiquement par Render (rotatable) ---
       - key: DJANGO_SECRET_KEY
         generateValue: true
 
-      # --- Secrets : à remplir manuellement dans le dashboard Render ---
-      # Clé API Cohere
-      - key: COHERE_API_KEY
-        syncValue: false
-      # Base PostgreSQL managée Supabase (Settings → Database)
-      - key: DB_NAME
-        syncValue: false
-      - key: DB_USER
-        syncValue: false
-      - key: DB_PASSWORD
-        syncValue: false
-      - key: DB_HOST
-        syncValue: false
-      - key: DB_PORT
-        syncValue: false
-      # Supabase Storage (S3) pour les fichiers uploadés (disque Render éphémère)
-      - key: AWS_S3_ENDPOINT_URL
-        syncValue: false
-      - key: AWS_STORAGE_BUCKET_NAME
-        syncValue: false
-      - key: AWS_ACCESS_KEY_ID
-        syncValue: false
-      - key: AWS_SECRET_ACCESS_KEY
-        syncValue: false
-      - key: AWS_S3_REGION_NAME
-        syncValue: false
+      # Les autres variables (secrets + URLs Vercel) s'ajoutent dans le
+      # dashboard — voir la liste en tête de fichier.
