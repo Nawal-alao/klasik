@@ -73,6 +73,9 @@ if not DEBUG:
 # Application definition
 
 INSTALLED_APPS = [
+    # Thème admin : 'unfold' doit rester AVANT 'django.contrib.admin'
+    # pour surcharger ses templates (ordre imposé par la doc Unfold).
+    'unfold',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -176,6 +179,34 @@ else:
         'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
         'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
     }
+
+# ---------------------------------------------------------------
+# Thème de l'admin : django-unfold
+# ---------------------------------------------------------------
+# Échelle « primary » dérivée du terracotta #C1622D (accent utilisé
+# côté frontend React) : teinte (21,5°) et saturation constantes,
+# seule la luminosité varie. La nuance 600 — la plus employée par
+# les styles Unfold (boutons, liens) — est exactement #C1622D.
+UNFOLD = {
+    'SITE_TITLE': 'Évoly Admin',
+    'SITE_HEADER': 'Évoly',
+    'SHOW_HISTORY': True,
+    'COLORS': {
+        'primary': {
+            '50': '#fcf4f1',
+            '100': '#f8eae2',
+            '200': '#f2d5c5',
+            '300': '#e8b79c',
+            '400': '#db9066',
+            '500': '#d37541',
+            '600': '#c1622d',
+            '700': '#9f5125',
+            '800': '#7e401d',
+            '900': '#633217',
+            '950': '#442310',
+        },
+    },
+}
 
 # CKEditor 5
 CKEDITOR_5_CONFIGS = {

@@ -9,6 +9,7 @@ qu'on a construit ensemble sur cette app :
 """
 
 from django.contrib import admin, messages
+from unfold.admin import ModelAdmin, StackedInline, TabularInline
 from .models import Matiere, CoefficientMatiere, Cours, Sequence
 from evaluations.services import generer_examen_ia
 
@@ -17,13 +18,13 @@ from evaluations.services import generer_examen_ia
 # MATIÈRE
 # ---------------------------------------------------------------------------
 
-class CoefficientMatiereInline(admin.TabularInline):
+class CoefficientMatiereInline(TabularInline):
     model = CoefficientMatiere
     extra = 1
 
 
 @admin.register(Matiere)
-class MatiereAdmin(admin.ModelAdmin):
+class MatiereAdmin(ModelAdmin):
     list_display = ("nom",)
     search_fields = ("nom",)
     inlines = [CoefficientMatiereInline]
@@ -33,7 +34,7 @@ class MatiereAdmin(admin.ModelAdmin):
 # COURS + SÉQUENCES
 # ---------------------------------------------------------------------------
 
-class SequenceInline(admin.StackedInline):
+class SequenceInline(StackedInline):
     model = Sequence
     extra = 1
     ordering = ["ordre"]
@@ -66,7 +67,7 @@ generer_examen_difficile = _generer_examen_niveau("DIFFICILE", "Difficile")
 
 
 @admin.register(Cours)
-class CoursAdmin(admin.ModelAdmin):
+class CoursAdmin(ModelAdmin):
     list_display = ("titre", "matiere", "classe_scolaire", "serie", "statut_validation")
     list_filter = ("statut_validation", "classe_scolaire", "serie", "matiere")
     search_fields = ("titre",)

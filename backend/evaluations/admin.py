@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Progression, Examen, Question, Resultat, ReponseEleve 
+from unfold.admin import ModelAdmin, StackedInline
+from .models import Progression, Examen, Question, Resultat, ReponseEleve
  
 @admin.action(description="Recalculer la progression sélectionnée")
 def recalculer_progression(modeladmin, request, queryset):
@@ -8,13 +9,13 @@ def recalculer_progression(modeladmin, request, queryset):
  
  
 @admin.register(Progression)
-class ProgressionAdmin(admin.ModelAdmin):
+class ProgressionAdmin(ModelAdmin):
     list_display = ("eleve", "matiere", "niveau_maitrise", "derniere_mise_a_jour")
     list_filter = ("matiere",)
     actions = [recalculer_progression]
 
 
-class QuestionInline(admin.StackedInline):
+class QuestionInline(StackedInline):
     """
     Permet de relire, corriger, et valider chaque question générée
     directement depuis la page de l'Examen, sans naviguer ailleurs.
@@ -24,7 +25,7 @@ class QuestionInline(admin.StackedInline):
  
  
 @admin.register(Examen)
-class ExamenAdmin(admin.ModelAdmin):
+class ExamenAdmin(ModelAdmin):
     list_display = ("titre", "cours", "type_generation", "statut_validation", "date_publication")
     list_filter = ("statut_validation", "type_generation", "cours__matiere")
     inlines = [QuestionInline]
@@ -41,7 +42,7 @@ class ExamenAdmin(admin.ModelAdmin):
  
  
 @admin.register(Resultat)
-class ResultatAdmin(admin.ModelAdmin):
+class ResultatAdmin(ModelAdmin):
     list_display = ("eleve", "examen", "note", "date_passage")
     list_filter = ("examen",)
  

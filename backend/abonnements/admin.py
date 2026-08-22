@@ -10,6 +10,7 @@ d'un établissement qui vient de payer, sans avoir à cliquer élève par
 from django.contrib import admin
 from django.utils import timezone
 from datetime import timedelta
+from unfold.admin import ModelAdmin
 from .models import Abonnement
 
 
@@ -40,7 +41,7 @@ def prolonger_abonnements(modeladmin, request, queryset):
 
 
 @admin.register(Abonnement)
-class AbonnementAdmin(admin.ModelAdmin):
+class AbonnementAdmin(ModelAdmin):
     list_display = ("eleve", "formule", "statut", "date_debut", "date_fin")
     list_filter = ("statut", "formule")
     search_fields = ("eleve__prenom", "eleve__nom")

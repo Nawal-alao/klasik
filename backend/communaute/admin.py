@@ -1,9 +1,10 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import GroupeEtude, Message, Signalement, MotInterdit
 
 
 @admin.register(GroupeEtude)
-class GroupeEtudeAdmin(admin.ModelAdmin):
+class GroupeEtudeAdmin(ModelAdmin):
     list_display = ("nom", "matiere", "classe_scolaire", "serie", "statut_validation", "cree_par")
     list_filter = ("classe_scolaire", "serie", "matiere", "statut_validation")
     search_fields = ("nom",)
@@ -23,19 +24,19 @@ class GroupeEtudeAdmin(admin.ModelAdmin):
 
 
 @admin.register(Message)
-class MessageAdmin(admin.ModelAdmin):
+class MessageAdmin(ModelAdmin):
     list_display = ("auteur", "groupe", "statut", "date_envoi", "score_risque")
     list_filter = ("statut", "groupe")
     search_fields = ("contenu",)
 
 
 @admin.register(Signalement)
-class SignalementAdmin(admin.ModelAdmin):
+class SignalementAdmin(ModelAdmin):
     list_display = ("message", "signale_par", "motif", "date_signalement")
     list_filter = ("date_signalement",)
 
 
 @admin.register(MotInterdit)
-class MotInterditAdmin(admin.ModelAdmin):
+class MotInterditAdmin(ModelAdmin):
     list_display = ("mot",)
     search_fields = ("mot",)
