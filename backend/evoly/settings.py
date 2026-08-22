@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from pathlib import Path
 
+from django.templatetags.static import static
+
 # If python-dotenv is installed, load environment variables from a local
 # .env file so `os.environ` contains keys defined there. This is optional
 # and harmless when python-dotenv is not available.
@@ -191,6 +193,12 @@ UNFOLD = {
     'SITE_TITLE': 'Évoly Admin',
     'SITE_HEADER': 'Évoly',
     'SHOW_HISTORY': True,
+    'STYLES': [
+        # « Négatif chaud » du site en mode sombre (voir le fichier).
+        # Lambda imposée : static() doit être résolu au rendu, pas à
+        # l'import du module de settings.
+        lambda request: static('css/unfold-warm-dark.css'),
+    ],
     'COLORS': {
         'primary': {
             '50': '#fcf4f1',
@@ -204,6 +212,14 @@ UNFOLD = {
             '800': '#7e401d',
             '900': '#633217',
             '950': '#442310',
+        },
+        # Unfold injecte ces variables pour les deux modes sans
+        # distinction : les variantes « -dark » sont surchargées ici,
+        # les « -light » gardent les défauts du package.
+        'font': {
+            'subtle-dark': '#a89e90',
+            'default-dark': '#f0eae0',
+            'important-dark': '#f7f3ec',
         },
     },
 }

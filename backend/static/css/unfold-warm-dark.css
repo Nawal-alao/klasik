@@ -1,0 +1,53 @@
+/*
+ * Mode sombre « négatif chaud » pour l'admin Unfold (identité Évoly).
+ *
+ * Unfold n'injecte ses variables de couleur que pour un seul mode
+ * (:root) : cette feuille les redéfinit sous html.dark — sélecteur plus
+ * spécifique que :root, donc appliqué quoi qu'il arrive après le bloc
+ * injecté par Unfold. Le mode clair n'est pas concerné.
+ *
+ * Palette :
+ *   fond de page   #1C1917  (base-900, noir chaud brun)
+ *   surfaces       #2A2622  (base-800, cartes / tableaux)
+ *   texte principal#F0EAE0  (base-300, blanc cassé chaud)
+ *   texte secondaire#a89e90 (base-400)
+ *   bordures       #3A342E  (base-700)
+ *   accent         #D97757  (primary-600, terracotta éclairci pour le
+ *                            contraste sur fond très sombre)
+ */
+
+/* Police de marque déjà utilisée côté frontend React. */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
+
+html.dark {
+    /* Neutres chauds (remplacent l'échelle gris-bleu par défaut) */
+    --color-base-950: #141110;
+    --color-base-900: #1c1917;
+    --color-base-800: #2a2622;
+    --color-base-700: #3a342e;
+    --color-base-600: #4a4238;
+    --color-base-500: #6e6659;
+    --color-base-400: #a89e90;
+    --color-base-300: #f0eae0;
+    --color-base-200: #ded4c4;
+    --color-base-100: #f7f3ec;
+    --color-base-50: #fbf9f4;
+
+    /* Accent : terracotta légèrement éclairci, nuance par nuance */
+    --color-primary-50: #fbf3ee;
+    --color-primary-100: #f7e2d5;
+    --color-primary-200: #f2c8b0;
+    --color-primary-300: #efb79c;
+    --color-primary-400: #e69a78;
+    --color-primary-500: #de8560;
+    --color-primary-600: #d97757;
+    --color-primary-700: #bc5f41;
+    --color-primary-800: #93452b;
+    --color-primary-900: #73361f;
+    --color-primary-950: #4d2314;
+}
+
+/* Titre de marque dans la barre latérale (cohérence avec le frontend). */
+#site-name a {
+    font-family: 'Fraunces', Georgia, serif;
+}
