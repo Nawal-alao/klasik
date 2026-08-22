@@ -258,6 +258,20 @@ else:
         }
     }
 
+    # En production, échouer explicitement si la base n'est pas configurée
+    # plutôt que de tenter localhost et planter avec une erreur obscure.
+    if not DEBUG:
+        _manquantes = [
+            v for v in ('DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST')
+            if not os.environ.get(v)
+        ]
+        if _manquantes:
+            from django.core.exceptions import ImproperlyConfigured
+            raise ImproperlyConfigured(
+                f"Variables d'environnement manquantes : {', '.join(_manquantes)}. "
+                "Renseignez-les dans le dashboard Render (base Supabase)."
+            )
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
